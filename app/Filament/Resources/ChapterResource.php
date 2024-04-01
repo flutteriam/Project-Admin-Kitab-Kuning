@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Models\Bab;
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Chapter;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
@@ -13,15 +13,18 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Actions\DeleteAction;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
-use App\Filament\Resources\BabResource\Pages;
-use App\Filament\Resources\BabResource\RelationManagers\ChaptersRelationManager;
+use App\Filament\Resources\ChapterResource\Pages;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\ChapterResource\RelationManagers;
 
-class BabResource extends Resource
+class ChapterResource extends Resource
 {
-    protected static ?string $model = Bab::class;
+    protected static ?string $model = Chapter::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -31,32 +34,23 @@ class BabResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title')
+                TextInput::make('translate')
+                    ->label('Title')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('translate_title')
+                TextInput::make('description')
                     ->required()
                     ->maxLength(255),
             ]);
     }
-
-
 
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
             ->schema([
                 Section::make()->schema([
-                    TextEntry::make('book.category.name')
-                        ->label('Category')
-                        ->columns(6),
-                    TextEntry::make('book.title')
-                        ->label('Kitab')
-                        ->columns(6),
-                    TextEntry::make('title')
-                        ->columns(6),
-                    TextEntry::make('translate_title')
-                        ->columns(6),
+                    TextEntry::make('translate'),
+                    TextEntry::make('description'),
                 ])
                 ->columns(2),
             ]);
@@ -65,23 +59,23 @@ class BabResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('title')
+            ->recordTitleAttribute('translate')
             ->columns([
                 TextColumn::make('order'),
-                TextColumn::make('title'),
-                TextColumn::make('translate_title'),
+                TextColumn::make('translate'),
+                TextColumn::make('description'),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 ViewAction::make()
-                    ->url(fn (Model $record): string => BabResource::getUrl('view', ['record' => $record])),
+                    ->url(fn (Model $record): string => ChapterResource::getUrl('view', ['record' => $record])),
                 EditAction::make(),
                 DeleteAction::make()->before(function ($record) {
-                    $nextBabs = Bab::where('order', '>', $record->order)->get();
-                    foreach ($nextBabs as $bab) {
-                        $bab->update(['order' => $bab->order - 1]);
+                    $nextChapters = Chapter::where('order', '>', $record->order)->get();
+                    foreach ($nextChapters as $chapter) {
+                        $chapter->update(['order' => $chapter->order - 1]);
                     }
                 }),
             ])
@@ -97,17 +91,17 @@ class BabResource extends Resource
     public static function getRelations(): array
     {
         return [
-            ChaptersRelationManager::class,
+            // WordsRelationManager::class,
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListBabs::route('/'),
-            'create' => Pages\CreateBab::route('/create'),
-            'view' => Pages\ViewBab::route('/{record}'),
-            'edit' => Pages\EditBab::route('/{record}/edit'),
+            'index' => Pages\ListChapters::route('/'),
+            'create' => Pages\CreateChapter::route('/create'),
+            'view' => Pages\ViewChapter::route('/{record}'),
+            'edit' => Pages\EditChapter::route('/{record}/edit'),
         ];
     }
 }
