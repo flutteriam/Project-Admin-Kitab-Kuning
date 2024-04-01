@@ -21,6 +21,7 @@ use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\ChapterResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ChapterResource\RelationManagers;
+use App\Filament\Resources\ChapterResource\RelationManagers\WordsRelationManager;
 
 class ChapterResource extends Resource
 {
@@ -49,6 +50,9 @@ class ChapterResource extends Resource
         return $infolist
             ->schema([
                 Section::make()->schema([
+                    TextEntry::make('bab.title'),
+                    TextEntry::make('book.title')
+                        ->label('Kitab'),
                     TextEntry::make('translate'),
                     TextEntry::make('description'),
                 ])
@@ -91,7 +95,7 @@ class ChapterResource extends Resource
     public static function getRelations(): array
     {
         return [
-            // WordsRelationManager::class,
+            WordsRelationManager::class,
         ];
     }
 
