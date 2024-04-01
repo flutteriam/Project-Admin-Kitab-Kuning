@@ -51,6 +51,7 @@ class BabsRelationManager extends RelationManager
                     }),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()->before(function ($record) {
                     $nextBabs = Bab::where('order', '>', $record->order)->get();
