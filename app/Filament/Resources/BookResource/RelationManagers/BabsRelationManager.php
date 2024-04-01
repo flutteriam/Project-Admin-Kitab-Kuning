@@ -7,6 +7,7 @@ use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Filament\Resources\BabResource;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -18,54 +19,19 @@ class BabsRelationManager extends RelationManager
 
     public function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('title')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('translate_title')
-                    ->required()
-                    ->maxLength(255),
-            ]);
+        return BabResource::form($form);
     }
 
     public function table(Table $table): Table
     {
-        return $table
-            ->recordTitleAttribute('title')
-            ->columns([
-                TextColumn::make('order'),
-                TextColumn::make('title'),
-                TextColumn::make('translate_title'),
-            ])
-            ->filters([
-                //
-            ])
+        return BabResource::table($table)
             ->headerActions([
                 Tables\Actions\CreateAction::make()
                     ->mutateFormDataUsing(function (array $data): array {
-                        $count = Bab::count() + 1;
+                        $count = Bab::whereBookId($this->getOwnerRecord()->id)->count() + 1;
                         $data['order'] = $count;
-
                         return $data;
                     }),
-            ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()->before(function ($record) {
-                    $nextBabs = Bab::where('order', '>', $record->order)->get();
-                    foreach ($nextBabs as $cat) {
-                        $cat->update(['order' => $cat->order - 1]);
-                    }
-                }),
-            ])
-            ->bulkActions([
-                // Tables\Actions\BulkActionGroup::make([
-                //     Tables\Actions\DeleteBulkAction::make(),
-                // ]),
-            ])
-            ->defaultSort('order')
-            ->reorderable('order');
+            ]);
     }
 }
