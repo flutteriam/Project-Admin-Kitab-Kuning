@@ -3,32 +3,30 @@
 namespace App\Filament\Resources;
 
 use Filament\Forms;
+use App\Models\Book;
 use Filament\Tables;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use App\Models\Category;
 use Filament\Forms\Form;
-use Filament\Pages\Page;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
-use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
-use Filament\Tables\Actions\DeleteAction;
+use Filament\Forms\Components\RichEditor;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Resources\Pages\CreateRecord;
-use App\Filament\Resources\CategoryResource\Pages;
+use App\Filament\Resources\BookResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\CategoryResource\RelationManagers;
+use App\Filament\Resources\BookResource\RelationManagers;
 
-class CategoryResource extends Resource
+class BookResource extends Resource
 {
-    protected static ?string $model = Category::class;
+    protected static ?string $model = Book::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -37,7 +35,7 @@ class CategoryResource extends Resource
         return $form
             ->schema([
                 Section::make()->schema([
-                    TextInput::make('name')
+                    TextInput::make('title')
                         ->live(debounce: 500)
                         ->afterStateUpdated(function (Get $get, Set $set, ?string $old, ?string $state) {
                             if (($get('slugs') ?? '') !== Str::slug($old)) {
@@ -50,6 +48,11 @@ class CategoryResource extends Resource
                     TextInput::make('slugs')
                         ->required()
                         ->readOnly(),
+                    Select::make('category_id')
+                        ->relationship(name: 'category', titleAttribute: 'name')
+                        ->required(),
+                    TextInput::make('description')
+                        ->required(),
                     Radio::make('status')
                         ->options([
                             1 => 'Active',
@@ -58,11 +61,18 @@ class CategoryResource extends Resource
                         ->inline()
                         ->inlineLabel(false)
                         ->default(1),
+                    Toggle::make('type')
+                        ->label('Featured')
+                        ->onColor('success')
+                        ->inline()
+                        ->default(1),
                     FileUpload::make('cover')
                         ->image()
                         ->required()
                         ->imageEditor()
-                        ->directory('categories'),
+                        ->directory('books'),
+                    RichEditor::make('content')
+                        ->required(),
                 ]),
             ]);
     }
@@ -71,8 +81,10 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('order'),
-                TextColumn::make('name'),
+                TextColumn::make('no')->rowIndex(),
+                TextColumn::make('title'),
+                TextColumn::make('likes'),
+                TextColumn::make('comments'),
                 TextColumn::make('status')
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => $state == '1' ? 'Active' : 'Inactive')
@@ -85,21 +97,14 @@ class CategoryResource extends Resource
                 //
             ])
             ->actions([
-                EditAction::make(),
-                DeleteAction::make()->before(function ($record) {
-                    $nextCategory = Category::where('order', '>', $record->order)->get();
-                    foreach ($nextCategory as $cat) {
-                        $cat->update(['order' => $cat->order - 1]);
-                    }
-                })
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 // Tables\Actions\BulkActionGroup::make([
                 //     Tables\Actions\DeleteBulkAction::make(),
                 // ]),
-            ])
-            ->defaultSort('order')
-            ->reorderable('order');
+            ]);
     }
 
     public static function getRelations(): array
@@ -112,9 +117,9 @@ class CategoryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCategories::route('/'),
-            'create' => Pages\CreateCategory::route('/create'),
-            'edit' => Pages\EditCategory::route('/{record}/edit'),
+            'index' => Pages\ListBooks::route('/'),
+            'create' => Pages\CreateBook::route('/create'),
+            'edit' => Pages\EditBook::route('/{record}/edit'),
         ];
     }
 }
