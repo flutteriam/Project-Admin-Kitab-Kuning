@@ -23,10 +23,7 @@ class RegisterController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required',
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'mobile' => 'required',
-            'country_code' => 'required',
+            'name' => 'required',
             'password' => 'required',
         ]);
         if ($validator->fails()) {
@@ -39,31 +36,15 @@ class RegisterController extends Controller
         }
         $emailValidation = User::where('email', $request->email)->first();
         if (is_null($emailValidation) || !$emailValidation) {
+            $user = User::create([
+                'email' => $request->email,
+                'name' => $request->name,
+                'type' => 1,
+                'password' => Hash::make($request->password),
+            ]);
 
-            $matchThese = ['country_code' => $request->country_code, 'mobile' => $request->mobile];
-            $data = User::where($matchThese)->first();
-            if (is_null($data) || !$data) {
-                $user = User::create([
-                    'email' => $request->email,
-                    'first_name' => $request->first_name,
-                    'last_name' => $request->last_name,
-                    'type' => 1,
-                    'status' => 1,
-                    'mobile' => $request->mobile,
-                    'country_code' => $request->country_code,
-                    'password' => Hash::make($request->password),
-                ]);
-
-                $token = JWTAuth::fromUser($user);
-                return response()->json(['user' => $user, 'token' => $token, 'status' => 200], 200);
-            }
-
-            $response = [
-                'success' => false,
-                'message' => 'Mobile is already registered.',
-                'status' => 500
-            ];
-            return response()->json($response, 500);
+            $token = JWTAuth::fromUser($user);
+            return response()->json(['user' => $user, 'token' => $token, 'status' => 200], 200);
         }
         $response = [
             'success' => false,
@@ -77,10 +58,7 @@ class RegisterController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required',
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'mobile' => 'required',
-            'country_code' => 'required',
+            'name' => 'required',
             'password' => 'required',
         ]);
         if ($validator->fails()) {
@@ -93,44 +71,15 @@ class RegisterController extends Controller
         }
         $emailValidation = User::where('email', $request->email)->first();
         if (is_null($emailValidation) || !$emailValidation) {
+            $user = User::create([
+                'email' => $request->email,
+                'name' => $request->name,
+                'type' => 0,
+                'password' => Hash::make($request->password),
+            ]);
 
-            $matchThese = ['country_code' => $request->country_code, 'mobile' => $request->mobile];
-            $data = User::where($matchThese)->first();
-            if (is_null($data) || !$data) {
-                $checkExistOrNot = User::where('type', '=', '0')->first();
-
-                if (is_null($checkExistOrNot)) {
-                    $user = User::create([
-                        'email' => $request->email,
-                        'first_name' => $request->first_name,
-                        'last_name' => $request->last_name,
-                        'type' => 0,
-                        'status' => 1,
-                        'mobile' => $request->mobile,
-                        'lat' => 0,
-                        'lng' => 0,
-                        'country_code' => $request->country_code,
-                        'password' => Hash::make($request->password),
-                    ]);
-
-                    $token = JWTAuth::fromUser($user);
-                    return response()->json(['user' => $user, 'token' => $token, 'status' => 200], 200);
-                }
-
-                $response = [
-                    'success' => false,
-                    'message' => 'Account already setuped',
-                    'status' => 500
-                ];
-                return response()->json($response, 500);
-            }
-
-            $response = [
-                'success' => false,
-                'message' => 'Mobile is already registered.',
-                'status' => 500
-            ];
-            return response()->json($response, 500);
+            $token = JWTAuth::fromUser($user);
+            return response()->json(['user' => $user, 'token' => $token, 'status' => 200], 200);
         }
         $response = [
             'success' => false,

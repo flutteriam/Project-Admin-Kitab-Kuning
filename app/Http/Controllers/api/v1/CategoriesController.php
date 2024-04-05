@@ -145,6 +145,26 @@ class CategoriesController extends Controller
         return response()->json($response, 404);
     }
 
+    public function getCategoriesForUser()
+    {
+        $data = Category::where('status', 1)->orderBy('order', 'asc')->get();
+        if (is_null($data)) {
+            $response = [
+                'success' => false,
+                'message' => 'Data not found.',
+                'status' => 404
+            ];
+            return response()->json($response, 404);
+        }
+
+        $response = [
+            'data' => $data,
+            'success' => true,
+            'status' => 200,
+        ];
+        return response()->json($response, 200);
+    }
+
     public function getAll()
     {
         $data = Category::all();

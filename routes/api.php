@@ -83,7 +83,7 @@ Route::prefix('/v1')->group(function () {
         Route::post('books/deleteLike', [BookLikesController::class, 'delete']);
         Route::post('books/saveBook', [SavedBookController::class, 'save']);
         Route::post('books/deleteSaved', [SavedBookController::class, 'delete']);
-        Route::post('books/getSavedBook', [SavedBookController::class, 'getSavedBook']);
+        Route::post('books/getSavedBooks', [SavedBookController::class, 'getSavedBook']);
 
         Route::post('comment/create', [CommentsController::class, 'save']);
         Route::post('comment/getById', [CommentsController::class, 'getById']);

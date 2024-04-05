@@ -184,9 +184,8 @@ class CommentsController extends Controller
                 'comments.book_id as comments',
                 'comments.comments as comments',
                 'comments.status as status',
-                'users.first_name as first_name',
-                'comments.uid as uid',
-                'users.last_name as last_name'
+                'users.name as name',
+                'comments.uid as uid'
             )
             ->join('users', 'comments.uid', '=', 'users.id')
             ->where($matchThese)

@@ -5,11 +5,12 @@ namespace App\Http\Controllers\api\v1;
 use App\Models\Book;
 use App\Models\User;
 use App\Models\BookLike;
-use App\Models\SavedBook;
 use App\Models\Category;
+use App\Models\SavedBook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\BookResource;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Validator;
 
@@ -416,26 +417,8 @@ class BookController extends Controller
             ];
             return response()->json($response, 404);
         }
-        $matchThese = ['books.slugs' => $request->slug];
-        $data = DB::table('books')
-            ->select(
-                'books.id as id',
-                'books.category_id as category_id',
-                'books.comments as comments',
-                'books.content as content',
-                'books.cover as cover',
-                'books.created_at',
-                'books.likes as likes',
-                'books.description as description',
-                'books.slugs as slugs',
-                'books.status as status',
-                'books.title as title',
-                'books.type as type',
-                'categories.name as cate_name',
-                'categories.title_color as title_color'
-            )
-            ->join('categories', 'books.category_id', '=', 'categories.id')
-            ->where($matchThese)
+        $data = Book::with(['category','babs','babs.chapters','babs.chapters.words'])
+            ->whereSlugs($request->slug)
             ->first();
 
         $response = [
@@ -459,25 +442,8 @@ class BookController extends Controller
             ];
             return response()->json($response, 404);
         }
-        $matchThese = ['books.id' => $request->id];
-        $data = DB::table('books')
-            ->select(
-                'books.id as id',
-                'books.category_id as category_id',
-                'books.comments as comments',
-                'books.content as content',
-                'books.cover as cover',
-                'books.created_at',
-                'books.likes as likes',
-                'books.description as description',
-                'books.slugs as slugs',
-                'books.status as status',
-                'books.title as title',
-                'books.type as type',
-                'categories.name as cate_name'
-            )
-            ->join('categories', 'books.category_id', '=', 'categories.id')
-            ->where($matchThese)
+        $data = Book::with(['category','babs','babs.chapters','babs.chapters.words'])
+            ->whereId($request->id)
             ->first();
         if ($request->uid) {
             $temp = BookLike::where(['uid' => $request->uid, 'book_id' => $data->id])->first();
@@ -498,7 +464,7 @@ class BookController extends Controller
             $data->haveSaved = false;
         }
         $response = [
-            'data' => $data,
+            'data' => new BookResource($data),
             'success' => true,
             'status' => 200,
         ];
