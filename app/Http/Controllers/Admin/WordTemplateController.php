@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Contracts\Support\Renderable;
-use Http\Requests\WordTemplateCreateRequest;
-use Http\Requests\WordTemplateUpdateRequest;
+use App\Http\Requests\WordTemplateCreateRequest;
+use App\Http\Requests\WordTemplateUpdateRequest;
 
 class WordTemplateController extends Controller
 {

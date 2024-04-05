@@ -10,8 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Contracts\Support\Renderable;
-use Http\Requests\BabCreateRequest;
-use Http\Requests\BabUpdateRequest;
+use App\Http\Requests\BabCreateRequest;
+use App\Http\Requests\BabUpdateRequest;
 
 class BabController extends Controller
 {

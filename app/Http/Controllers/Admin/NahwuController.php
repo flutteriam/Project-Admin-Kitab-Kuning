@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Support\Renderable;
-use Http\Requests\NahwuRequest;
+use App\Http\Requests\NahwuRequest;
 
 class NahwuController extends Controller
 {

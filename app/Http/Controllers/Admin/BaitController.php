@@ -10,8 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Contracts\Support\Renderable;
-use Http\Requests\BaitCreateRequest;
-use Http\Requests\BaitUpdateRequest;
+use App\Http\Requests\BaitCreateRequest;
+use App\Http\Requests\BaitUpdateRequest;
 
 class BaitController extends Controller
 {

@@ -11,8 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Contracts\Support\Renderable;
-use Http\Requests\ChapterCreateRequest;
-use Http\Requests\ChapterUpdateRequest;
+use App\Http\Requests\ChapterCreateRequest;
+use App\Http\Requests\ChapterUpdateRequest;
 
 class ChapterController extends Controller
 {

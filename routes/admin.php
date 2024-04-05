@@ -25,14 +25,13 @@ use App\Http\Controllers\Admin\WordTemplateController;
 */
 
 Route::prefix('datatable')->group(function () {
-    Route::post('category', [CategoryController::class, ['datatable']])->name('api.category_datatable');
-    Route::post('post', [PostController::class, ['datatable']])->name('api.post_datatable');
-    Route::post('bab', [BabController::class, ['datatable']])->name('api.bab_datatable');
-    Route::post('bait', [BaitController::class, ['datatable']])->name('api.bait_datatable');
-    Route::post('kata', [ChapterController::class, ['datatable']])->name('api.kata_post_datatable');
-    Route::post('tag', [TagController::class, ['datatable']])->name('api.tag_datatable');
-    Route::post('template', [WordTemplateController::class, ['datatable']])->name('api.word_template_datatable');
-    Route::get('template/{id?}', [WordTemplateController::class, ['show']])->name('api.template_show');
+    Route::post('post', [PostController::class, 'datatable'])->name('api.post_datatable');
+    Route::post('bab', [BabController::class, 'datatable'])->name('api.bab_datatable');
+    Route::post('bait', [BaitController::class, 'datatable'])->name('api.bait_datatable');
+    Route::post('kata', [ChapterController::class, 'datatable'])->name('api.kata_post_datatable');
+    Route::post('tag', [TagController::class, 'datatable'])->name('api.tag_datatable');
+    Route::post('template', [WordTemplateController::class, 'datatable'])->name('api.word_template_datatable');
+    Route::get('template/{id?}', [WordTemplateController::class, 'show'])->name('api.template_show');
 });
 
 
@@ -47,7 +46,9 @@ Route::group(['middleware' => ['isAuth', 'isRole:admin']], function () {
 Route::group(['middleware' => ['isAuth', 'isRole:admin|penginput']], function () {
     Route::get('', [DashboardController::class, 'index'])->name('admin');
     Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+
     Route::resource('category', CategoryController::class)->except(['create']);
+    Route::post('datatable/category', [CategoryController::class, 'datatable'])->name('api.category_datatable');
 
     Route::get('post/{id?}', [PostController::class, 'index'])->name('post.index');
     Route::resource('post', PostController::class)->except(['index', 'create', 'show']);

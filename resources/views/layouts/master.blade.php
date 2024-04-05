@@ -43,7 +43,7 @@
         .arab {
             font-family: 'PDMS_IslamicFont';
         }
-    </style>]]
+    </style>
     @yield('css')
 </head>
 

@@ -108,7 +108,7 @@
                             window.location.replace(data.redirect)
                         })
                         .catch(err => {
-                            console(err)
+                            console.log(err)
                             loading('hide')
                             $swal.fire({
                                 icon: 'error',
