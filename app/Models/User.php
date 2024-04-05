@@ -83,4 +83,16 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail, Filam
     {
         return $this->type == 0;
     }
+
+    public function hasRole($roles)
+    {
+        $roleMapping = ['admin' => 0,  'penginput' => 1,  'user' => 2];
+        foreach ($roles as $role) {
+            $roleType = $roleMapping[$role];
+            if ($this->type === $roleType) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
