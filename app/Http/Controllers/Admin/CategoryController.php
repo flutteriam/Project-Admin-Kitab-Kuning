@@ -14,6 +14,7 @@ use App\Http\Requests\Admin\CategoryUpdateRequest;
 
 class CategoryController extends Controller
 {
+    private $path_image = 'categories';
     /**
      * Display a listing of the resource.
      * @return Renderable
@@ -36,9 +37,9 @@ class CategoryController extends Controller
             $imageName = time() . '.' . $image->getClientOriginalExtension();
 
             // Store the image in the storage disk under the 'images' directory
-            Storage::putFileAs('categories', $image, $imageName);
+            Storage::putFileAs($this->path_image, $image, $imageName);
 
-            $image = 'categories/' . $imageName;
+            $image = $this->path_image . '/' . $imageName;
         }
         $slug = Str::slug($request->name);
         $count = Category::count();
@@ -47,10 +48,11 @@ class CategoryController extends Controller
             'slugs' => $slug,
             'order' => $count + 1,
             'cover' => $image ?? '',
-            'status' => $request->status ?? 1,
+            'status' => $request->status == 1 ? 1 : 0,
         ]);
         return response()->json([
             'status' => true,
+            'count' => $count + 1,
             'message' => [
                 'head' => 'Berhasil',
                 'body' => 'Menambahkan Kategori baru'
@@ -86,15 +88,12 @@ class CategoryController extends Controller
             $imageName = time() . '.' . $image->getClientOriginalExtension();
 
             // Store the image in the storage disk under the 'images' directory
-            Storage::putFileAs('categories', $image, $imageName);
+            Storage::putFileAs($this->path_image, $image, $imageName);
 
-            $image = 'categories/' . $imageName;
+            $image = $this->path_image . '/' . $imageName;
 
             if (Storage::exists($category->cover)) {
                 Storage::delete($category->cover);
-                echo "File deleted successfully.";
-            } else {
-                echo "File does not exist.";
             }
         }
         $old = Category::where('order', $request->order)->first();
@@ -104,7 +103,7 @@ class CategoryController extends Controller
             'slugs' => $slug,
             'order' => $request->order,
             'cover' => $image ?? $category->cover,
-            'status' => $request->status ?? 1,
+            'status' => $request->status == 1 ? 1 : 0,
         ]);
         return response()->json([
             'status' => true,
@@ -127,6 +126,9 @@ class CategoryController extends Controller
         foreach ($nextCategory as $cat) {
             $cat->update(['order' => $cat->order - 1]);
         }
+        if (Storage::exists($category->cover)) {
+            Storage::delete($category->cover);
+        }
         $category->delete();
         return response()->json([
             'status' => true,
@@ -145,8 +147,6 @@ class CategoryController extends Controller
                 return '<div class="btn-group">
                 <button type="button" class="btn btn-warning" onclick="editData(' . $aksi->id . ', this)">
                 <i class="fa fa-pencil"></i></button>
-                <button type="button" class="btn btn-info" onclick="detailData(' . $aksi->id . ')">
-                <i class="fa fa-eye"></i></button>
                 <button type="button" class="btn btn-danger" onclick="deleteData(' . $aksi->id . ', this)">
                 <i class="fa fa-trash"></i></button>';
             })

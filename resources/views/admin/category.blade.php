@@ -15,7 +15,7 @@
                         <table id="table-data" class="display datatables">
                             <thead>
                                 <tr>
-                                    <th>No</th>
+                                    <th>Urutan</th>
                                     <th>Nama</th>
                                     <th>Cover</th>
                                     <th>Status</th>
@@ -64,21 +64,21 @@
                             </select>
                         </div>
                         <div class="form-group">
-                        <label for="">Cover</label>
-                        <br>
-                        <input type="file" name="image" id="fieldImage" accept="image/*">
-                        <br>
-                        <img id="imagePreview" src="#" alt="Image Preview"
-                            style="display: none; width: 100px; height: 100px;">
+                            <label for="">Cover</label>
+                            <br>
+                            <input type="file" name="image" id="fieldImage" accept="image/*">
+                            <br>
+                            <img id="imagePreview" src="#" alt="Image Preview"
+                                style="display: none; width: 100px; height: 100px;">
+                        </div>
                     </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-secondary" id="btn-submit">Simpan</button>
+                    </div>
+                </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
-                <button type="submit" class="btn btn-secondary" id="btn-submit">Simpan</button>
-            </div>
-            </form>
         </div>
-    </div>
     </div>
 @endsection
 
@@ -181,6 +181,9 @@
                             }) => {
                                 $('#modal-data').modal('hide')
                                 loading('hide', $(".modal-content"))
+                                $('#fieldOrder').append(
+                                    '<option value="' + data.count + '">' + data.count +
+                                    '</option>');
                                 table.ajax.reload()
                                 $swal.fire({
                                     icon: 'success',
@@ -270,6 +273,7 @@
                                     data
                                 }) => {
                                     loading('hide', el)
+                                    $('#fieldOrder option:last-child').remove();
                                     $swal.fire({
                                         icon: 'success',
                                         title: data.message.head,
@@ -280,12 +284,6 @@
                         })
                     }
                 })
-        }
-
-        const detailData = id => {
-            let url = `{{ route('post.index', ['id' => ':id']) }}`
-            url = url.replace(':id', id)
-            window.location.href = `${url}`
         }
     </script>
 @endsection

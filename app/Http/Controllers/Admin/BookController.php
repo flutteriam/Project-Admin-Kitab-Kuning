@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Post;
+use App\Models\Book;
 use App\Models\Category;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Contracts\Support\Renderable;
-use App\Http\Requests\PostCreateRequest;
-use App\Http\Requests\PostUpdateRequest;
+use App\Http\Requests\Admin\BookCreateRequest;
+use App\Http\Requests\Admin\BookUpdateRequest;
 
-class PostController extends Controller
+class BookController extends Controller
 {
     private $path_image = 'uploads/posts';
 
@@ -23,11 +24,11 @@ class PostController extends Controller
     public function index($id = null)
     {
         $categories = Category::all();
-        $active_cateogry = null;
+        $active_category = null;
         if($id) {
-            $active_cateogry = Category::find($id);
+            $active_category = Category::find($id);
         }
-        return view('post::post', compact('categories', 'active_cateogry'));
+        return view('admin.book', compact('categories', 'active_category'));
     }
 
     /**
@@ -35,20 +36,25 @@ class PostController extends Controller
      * @param Request $request
      * @return Renderable
      */
-    public function store(PostCreateRequest $request)
+    public function store(BookCreateRequest $request)
     {
-        if($request->hasFile('image_upload')) {
-            $fileName = Str::slug($request->title).'-'.time().'.'.$request->image_upload->extension();
-            $request->image_upload->move(public_path($this->path_image), $fileName);
+        if ($request->hasFile('image_upload')) {
+            $image = $request->file('image_upload');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+
+            // Store the image in the storage disk under the 'images' directory
+            Storage::putFileAs($this->path_image, $image, $imageName);
+
+            $image = $this->path_image . '/' . $imageName;
         }
         $data = $request->all();
-        $data['image'] = $fileName;
-        Post::create($data);
+        $data['cover'] = $image;
+        Book::create($data);
         return response()->json([
             'status' => true,
             'message' => [
                 'head' => 'Berhasil',
-                'body' => 'Menambahkan Post baru'
+                'body' => 'Menambahkan Kitab baru'
             ]
         ], 200);
     }
@@ -62,7 +68,7 @@ class PostController extends Controller
     {
         return response()->json([
             'status' => true,
-            'data' => Post::with('category')->find($id)
+            'data' => Book::with('category')->find($id)
         ], 200);
     }
 
@@ -75,7 +81,7 @@ class PostController extends Controller
     {
         return response()->json([
             'status' => true,
-            'data' => Post::where('category_id', $id)->get()
+            'data' => Book::where('category_id', $id)->get()
         ], 200);
     }
 
@@ -85,21 +91,33 @@ class PostController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function update(PostUpdateRequest $request, $id)
+    public function update(BookUpdateRequest $request, $id)
     {
-        $post = Post::find($id);
-        if($request->hasFile('image_upload')) {
-            $fileName = Str::slug($request->title).'-'.time().'.'.$request->image_upload->extension();
-            $request->image_upload->move(public_path($this->path_image), $fileName);
+        $book = Book::find($id);
+        if ($request->hasFile('image_upload')) {
+            $image = $request->file('image_upload');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+
+            // Store the image in the storage disk under the 'images' directory
+            Storage::putFileAs($this->path_image, $image, $imageName);
+
+            $image = $this->path_image . '/' . $imageName;
+
+            if (Storage::exists($book->cover)) {
+                Storage::delete($book->cover);
+                echo "File deleted successfully.";
+            } else {
+                echo "File does not exist.";
+            }
         }
         $data = $request->all();
-        $data['image'] = $fileName ?? $post->image;
-        $post->update($data);
+        $data['cover'] = $image ?? $book->cover;
+        $book->update($data);
         return response()->json([
             'status' => true,
             'message' => [
                 'head' => 'Berhasil',
-                'body' => 'Mengubah Post'
+                'body' => 'Mengubah Kitab'
             ]
         ], 200);
     }
@@ -111,24 +129,26 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        $post = Post::find($id);
-        if($post->image) {
-            // unlink(public_path(str_replace('/', '\\', $this->path_image)).'\\'.$post->image);
-            unlink(public_path($this->path_image ."/".$post->image));
+        $book = Book::find($id);
+        if (Storage::exists($book->cover)) {
+            Storage::delete($book->cover);
+            echo "File deleted successfully.";
+        } else {
+            echo "File does not exist.";
         }
-        $post->delete();
+        $book->delete();
         return response()->json([
             'status' => true,
             'message' => [
                 'head' => 'Berhasil',
-                'body' => 'Menghapus Post'
+                'body' => 'Menghapus Kitab'
             ]
         ], 200);
     }
 
     public function datatable(Request $request) {
         $category = $request->category;
-        $post = Post::with('category')->where('category_id', $category)->get();
+        $post = Book::with('category')->where('category_id', $category)->get();
         return DataTables::of($post)
             ->addColumn('aksi', function($aksi) {
                 return '<div class="btn-group">

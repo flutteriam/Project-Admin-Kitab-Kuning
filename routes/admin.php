@@ -5,7 +5,7 @@ use App\Http\Controllers\Admin\BabController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BaitController;
-use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\BookController;
 use App\Http\Controllers\Admin\NahwuController;
 use App\Http\Controllers\Admin\TarqibController;
 use App\Http\Controllers\Admin\ChapterController;
@@ -25,7 +25,6 @@ use App\Http\Controllers\Admin\WordTemplateController;
 */
 
 Route::prefix('datatable')->group(function () {
-    Route::post('post', [PostController::class, 'datatable'])->name('api.post_datatable');
     Route::post('bab', [BabController::class, 'datatable'])->name('api.bab_datatable');
     Route::post('bait', [BaitController::class, 'datatable'])->name('api.bait_datatable');
     Route::post('kata', [ChapterController::class, 'datatable'])->name('api.kata_post_datatable');
@@ -50,9 +49,10 @@ Route::group(['middleware' => ['isAuth', 'isRole:admin|penginput']], function ()
     Route::resource('category', CategoryController::class)->except(['create']);
     Route::post('datatable/category', [CategoryController::class, 'datatable'])->name('api.category_datatable');
 
-    Route::get('post/{id?}', [PostController::class, 'index'])->name('post.index');
-    Route::resource('post', PostController::class)->except(['index', 'create', 'show']);
-    Route::get('post/{id}/show', [PostController::class, 'show'])->name('post.show');
+    Route::get('book/{id?}', [BookController::class, 'index'])->name('book.index');
+    Route::resource('book', BookController::class)->except(['index', 'create', 'show']);
+    Route::get('book/{id}/show', [BookController::class, 'show'])->name('book.show');
+    Route::post('datatable/book', [BookController::class, 'datatable'])->name('api.book_datatable');
 
     Route::get('detail/{id}', [BabController::class, 'ajax_post_detail'])->name('post.ajax.detail');
 
@@ -76,7 +76,7 @@ Route::group(['middleware' => ['isAuth', 'isRole:admin|contributor']], function 
     Route::resource('tag', TagController::class)->except(['create', 'show']);
     Route::get('tag/show', [TagController::class, 'show'])->name('tag.show');
 
-    Route::get('post/{id}/show', [PostController::class, 'show'])->name('post.show');
+    Route::get('post/{id}/show', [BookController::class, 'show'])->name('post.show');
 
     Route::get('bab/{bab}/show', [BabController::class, 'show'])->name('bab.show');
 

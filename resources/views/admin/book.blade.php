@@ -5,7 +5,7 @@
     <div class="col-sm-12">
         <div class="card">
             <div class="card-header">
-                <h5>Post</h5>
+                <h5>Kitab</h5>
             </div>
             <div class="card-body">
                 <div class="row mb-2">
@@ -13,7 +13,7 @@
                         <select name="category" id="category" autocomplete="off" class="form-control">
                             <option value="" selected disabled>== Pilih Kategori ==</option>
                             @foreach ($categories as $key => $value)
-                                <option value="{{ $value->id }}" {{ (isset($active_cateogry) && $active_cateogry->id == $value->id) ? 'selected' : '' }}>{{ $value->name }}</option>
+                                <option value="{{ $value->id }}" {{ (isset($active_category) && $active_category->id == $value->id) ? 'selected' : '' }}>{{ $value->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -70,11 +70,11 @@
                     </div>
                     <div class="form-group">
                         <label for="">Terjemahan Judul</label>
-                        <input type="text" placeholder="Terjemahan Judul" name="translate_title" id="fieldTransTitle" class="form-control">
+                        <input type="text" placeholder="Terjemahan Judul" name="description" id="fieldTransTitle" class="form-control">
                     </div>
                     <div class="form-group">
                         <label for="">Penjelasan</label>
-                        <textarea name="explanation" id="fieldExplanation" cols="30" rows="5" class="form-control" placeholder="Penjelasan"></textarea>
+                        <textarea name="content" id="fieldContent" cols="30" rows="5" class="form-control" placeholder="Penjelasan"></textarea>
                     </div>
                     <div class="text-center" id="teksImage">
                         <p class="text-danger">Kosongkan jika tidak ingin merubah gambar</p>
@@ -108,7 +108,7 @@
     let table
     let type
     $(document).ready(() => {
-        CKEDITOR.replace('explanation')
+        CKEDITOR.replace('content')
         $.fn.dataTableExt.oApi.fnPagingInfo = function(oSettings) {
             return {
                 "iStart": oSettings._iDisplayStart,
@@ -132,7 +132,7 @@
                 [10, 25, 50, 100, 200, 300, 500, 1000, "All"]
             ],
             ajax: {
-                url: "{{ route('api.post_datatable') }}",
+                url: "{{ route('api.book_datatable') }}",
                 type: "POST",
                 data: data => {
                     data.category = $("#category").val()
@@ -140,7 +140,7 @@
             },
             columns : [
                 { data: "id", orderable: false, searchable: false },
-                { 
+                {
                     data: null,
                     render: function(data, type, row){
                         let url = `{{ route('bab.index', ':id') }}`
@@ -154,8 +154,8 @@
                 },
                 { data: "category.name" },
                 { data: "title" },
-                { data: "translate_title" },
-                { data: "explanation" },
+                { data: "description" },
+                { data: "content" },
                 { data: "aksi", orderable: false, searchable: false }
             ],
             rowId: function(a) {
@@ -177,12 +177,12 @@
         $("#tambah-data").on('click', () => {
             let category = $("#category").val()
             if(!category) {
-                return $swal.fire('Gagal', 'Silahkan pilih kategori terlebih dahuli', 'error')
+                return $swal.fire('Gagal', 'Silahkan pilih kategori terlebih dahulu', 'error')
             }
-            $("#modal-data-label").html("Tambah Post")
+            $("#modal-data-label").html("Tambah Kitab")
             $("#btn-submit").html("Simpan")
             $("#form-data")[0].reset()
-            CKEDITOR.instances['fieldExplanation'].setData('')
+            CKEDITOR.instances['fieldContent'].setData('')
             $("#fieldImage").val('')
             $("#fieldOldImage").hide()
             $("#teksImage").hide()
@@ -195,11 +195,11 @@
             loading('show', $(".modal-content"))
             e.preventDefault()
             let FD = new FormData($("#form-data")[0])
-            FD.append('explanation', CKEDITOR.instances['fieldExplanation'].getData())
+            FD.append('description', CKEDITOR.instances['fieldContent'].getData())
             FD.append('image_upload', document.querySelector('#fieldImage').files[0])
             if(type == "POST") {
                 new Promise((resolve, reject) => {
-                    $axios.post(`{{ route('post.store') }}`, FD, {headers: {'Content-Type' : 'multipart/form-data'}})
+                    $axios.post(`{{ route('book.store') }}`, FD, {headers: {'Content-Type' : 'multipart/form-data'}})
                         .then(({data}) => {
                             $('#modal-data').modal('hide')
                             loading('hide', $(".modal-content"))
@@ -217,7 +217,7 @@
                 })
             } else if(type == 'PUT') {
                 new Promise((resolve, reject) => {
-                    let url = `{{ route('post.update', ['post' => ':id']) }}`
+                    let url = `{{ route('book.update', ['book' => ':id']) }}`
                     url = url.replace(':id', $("#fieldId").val())
                     FD.append('_method', 'PUT')
                     $axios.post(`${url}`, FD, {headers: {'Content-Type' : 'multipart/form-data'}})
@@ -244,20 +244,20 @@
     const editData = (id, el) => {
         loading('show', el)
         new Promise((resolve, reject) => {
-            let url = `{{ route('post.edit', ['post' => ":id"]) }}`
+            let url = `{{ route('book.edit', ['book' => ":id"]) }}`
             url = url.replace(':id', id)
             $axios.get(`${url}`)
                 .then(({data}) => {
                     type = 'PUT'
                     let post = data.data
-                    $("#modal-data-label").html("Update Post")
+                    $("#modal-data-label").html("Update Kitab")
                     $("#btn-submit").html("Update")
                     $("#fieldCategory").val(post.category.id)
                     $("#fieldId").val(post.id)
                     $("#fieldTitle").val(post.title)
-                    $("#fieldTransTitle").val(post.translate_title)
+                    $("#fieldTransTitle").val(post.description)
                     $("#teksImage").show()
-                    CKEDITOR.instances['fieldExplanation'].setData(post.explanation)
+                    CKEDITOR.instances['fieldContent'].setData(post.content)
                     $("#fieldImage").val('')
                     if(post.image) {
                         $('#fieldOldImage').show()
@@ -275,7 +275,7 @@
     const deleteData = (id, el) => {
         $swal.fire({
             title: 'Yakin ?',
-            text: "Ingin menghapus Post ini!",
+            text: "Ingin menghapus Kitab ini!",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -287,7 +287,7 @@
             if(res.isConfirmed) {
                 loading('show', el)
                 new Promise((resolve, reject) => {
-                    let url = `{{ route('post.destroy', ['post' => ':id']) }}`
+                    let url = `{{ route('book.destroy', ['book' => ':id']) }}`
                     url = url.replace(':id', id)
                     $axios.delete(`${url}`)
                         .then(({data}) => {

@@ -30,7 +30,7 @@
             @endauth
 
             @guest
-                <button onclick="window.location.replace(`{{ route('auth.login') }}`)" class="btn btn-warning" ><i class="fa fa-book"></i> ({{ request()->page ?? 1 }}) <i class="fa fa-bookmark"></i> Simpan</button>
+                <button onclick="window.location.replace(`{{ route('admin.login') }}`)" class="btn btn-warning" ><i class="fa fa-book"></i> ({{ request()->page ?? 1 }}) <i class="fa fa-bookmark"></i> Simpan</button>
             @endguest
 
             {{-- Next Page Link --}}

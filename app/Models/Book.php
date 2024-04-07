@@ -10,7 +10,7 @@ class Book extends Model
 {
     protected $table = 'books';
 
-    public $timestamps = true; //by default timestamp false
+    public $timestamps = true;
 
     protected $fillable = ['category_id', 'title', 'slugs', 'cover', 'type', 'content', 'description', 'likes', 'comments', 'status'];
 
