@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Book;
 use App\Models\Category;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Contracts\Support\Renderable;
 use App\Http\Requests\Admin\BookCreateRequest;
@@ -15,7 +15,7 @@ use App\Http\Requests\Admin\BookUpdateRequest;
 
 class BookController extends Controller
 {
-    private $path_image = 'uploads/posts';
+    private $path_image = 'books';
 
     /**
      * Display a listing of the resource.
@@ -38,8 +38,8 @@ class BookController extends Controller
      */
     public function store(BookCreateRequest $request)
     {
-        if ($request->hasFile('image_upload')) {
-            $image = $request->file('image_upload');
+        if ($request->hasFile('cover')) {
+            $image = $request->file('cover');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
 
             // Store the image in the storage disk under the 'images' directory
@@ -47,8 +47,13 @@ class BookController extends Controller
 
             $image = $this->path_image . '/' . $imageName;
         }
-        $data = $request->all();
-        $data['cover'] = $image;
+        $data = $request->except('_token');
+        $slug = Str::slug($request->name);
+        $data['cover'] = $image ?? null;
+        $data['likes'] = 0;
+        $data['slugs'] = $slug;
+        $data['comments'] = 0;
+        $data['status'] = 1;
         Book::create($data);
         return response()->json([
             'status' => true,
@@ -94,8 +99,9 @@ class BookController extends Controller
     public function update(BookUpdateRequest $request, $id)
     {
         $book = Book::find($id);
-        if ($request->hasFile('image_upload')) {
-            $image = $request->file('image_upload');
+        $slug = Str::slug($request->name);
+        if ($request->hasFile('cover')) {
+            $image = $request->file('cover');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
 
             // Store the image in the storage disk under the 'images' directory
@@ -105,13 +111,11 @@ class BookController extends Controller
 
             if (Storage::exists($book->cover)) {
                 Storage::delete($book->cover);
-                echo "File deleted successfully.";
-            } else {
-                echo "File does not exist.";
             }
         }
-        $data = $request->all();
+        $data = $request->except(['_token', '_method']);
         $data['cover'] = $image ?? $book->cover;
+        $data['slugs'] = $slug;
         $book->update($data);
         return response()->json([
             'status' => true,
@@ -132,9 +136,6 @@ class BookController extends Controller
         $book = Book::find($id);
         if (Storage::exists($book->cover)) {
             Storage::delete($book->cover);
-            echo "File deleted successfully.";
-        } else {
-            echo "File does not exist.";
         }
         $book->delete();
         return response()->json([
@@ -154,8 +155,6 @@ class BookController extends Controller
                 return '<div class="btn-group">
                 <button type="button" class="btn btn-warning" onclick="editData('.$aksi->id.', this)">
                 <i class="fa fa-pencil"></i></button>
-                <button type="button" class="btn btn-info" onclick="detailData('.$aksi->id.')">
-                <i class="fa fa-eye"></i></button>
                 <button type="button" class="btn btn-danger" onclick="deleteData('.$aksi->id.', this)">
                 <i class="fa fa-trash"></i></button>';
             })

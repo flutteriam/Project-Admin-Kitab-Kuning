@@ -49,9 +49,9 @@ Route::group(['middleware' => ['isAuth', 'isRole:admin|penginput']], function ()
     Route::resource('category', CategoryController::class)->except(['create']);
     Route::post('datatable/category', [CategoryController::class, 'datatable'])->name('api.category_datatable');
 
-    Route::get('book/{id?}', [BookController::class, 'index'])->name('book.index');
+    Route::get('kitab/{id?}', [BookController::class, 'index'])->name('book.index');
     Route::resource('book', BookController::class)->except(['index', 'create', 'show']);
-    Route::get('book/{id}/show', [BookController::class, 'show'])->name('book.show');
+    Route::get('kitab/{id}/show', [BookController::class, 'show'])->name('book.show');
     Route::post('datatable/book', [BookController::class, 'datatable'])->name('api.book_datatable');
 
     Route::get('detail/{id}', [BabController::class, 'ajax_post_detail'])->name('post.ajax.detail');

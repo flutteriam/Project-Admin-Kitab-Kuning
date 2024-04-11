@@ -14,11 +14,11 @@ class BookUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'translate_title' => 'required',
-            'category_id' => 'required',
             'title' => 'required',
-            'explanation' => 'required',
-            'image' => 'nullable'
+            'category_id' => 'required',
+            'description' => 'required',
+            'content' => 'required',
+            'cover' => 'nullable',
         ];
     }
 

@@ -17,7 +17,7 @@
                     <i class="icon-list"></i><span>Kategori</span>
                 </a>
             </li>
-            <li class="{{ request()->segment(2) == 'book' ? 'active' : '' }}">
+            <li class="{{ request()->segment(2) == 'kitab' ? 'active' : '' }}">
                 <a href="{{ route('book.index') }}" class="sidebar-header">
                     <i class="icon-book"></i><span>Kitab</span>
                 </a>
