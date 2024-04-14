@@ -79,7 +79,7 @@ class BabController extends Controller
     {
         return response()->json([
             'status' => true,
-            'data' => Bab::with('post')->find($id)
+            'data' => Bab::with('book')->find($id)
         ], 200);
     }
 
@@ -91,10 +91,11 @@ class BabController extends Controller
      */
     public function update(BabUpdateRequest $request, $id)
     {
-        // $request->merge(['book_id' => $request('book_id_yy')]);
-
         $bab = Bab::find($id);
-        $bab->update($request->all());
+        $bab->update([
+            'title' => $request->title,
+            'translate_title'=> $request->translate_title,
+        ]);
         return response()->json([
             'status' => true,
             'message' => [
@@ -112,12 +113,9 @@ class BabController extends Controller
     public function destroy($id)
     {
         $bab = Bab::find($id);
-        $lower_bab = Bab::where('no', '>', $bab->no)->get();
-        foreach ($lower_bab as $key => $value) {
-            $temp_no = $value->no;
-            $value->update([
-                'no' => ($temp_no - 1)
-            ]);
+        $nextBab = Bab::where('order', '>', $bab->order)->get();
+        foreach ($nextBab as $bab) {
+            $bab->update(['order' => $bab->order - 1]);
         }
         $bab->delete();
         return response()->json([

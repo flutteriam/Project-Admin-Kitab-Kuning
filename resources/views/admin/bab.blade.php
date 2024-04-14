@@ -373,13 +373,10 @@
                     }) => {
                         let bab = data.data
                         $("#fieldId").val(bab.id)
-                        // $("#fieldCategory").val(bab.post.category_id)
-                        // get_post(bab.post.category_id, 'fieldPost').then(() => $("#fieldPost").val(bab.book_id))
-                        $("#inputCategory").val(bab.post.category_id)
-                        $("#inputPost").val(bab.book_id)
+                        $("#inputCategory").val(bab.book.category_id)
+                        $("#inputPost").val(bab.book.id)
                         $("#fieldTitle").val(bab.title)
                         CKEDITOR.instances['fieldTransTitle'].setData(bab.translate_title)
-                        // $("#fieldTransTitle").val(bab.translate_title)
                         type = 'PUT'
                         loading('hide', el)
                         $("#modal-data-label").html("Update Bab")
