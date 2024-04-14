@@ -22,7 +22,7 @@
 
                 @endforelse --}}
 
-            @foreach ($bab->bait as $k_bait => $bait)
+            @foreach ($bab->chapters as $k_bait => $bait)
                 <div class="d-flex align-items-center m-l-10 m-t-10">
                     <h5 style="display: inherit;">
                         <div class="alert alert-warning dark m-r-5" role="alert"
@@ -36,7 +36,7 @@
                         <div id="form-bait-{{ $bait->id }}" style="display:none;">
                             <textarea name="translate_bait" class="form-control" id="input-bait-{{ $bait->id }}"
                                 placeholder="Masukkan Translate Bait" cols="30" rows="5" data-id="{{ $bait->id }}"
-                                data-bab-id="{{ $bait->bab_id }}" data-post-id="{{ $bait->post_id }}">{!! $bait->translate_bait !!}</textarea>
+                                data-bab-id="{{ $bait->bab_id }}" data-post-id="{{ $bait->book_id }}">{!! $bait->translate_bait !!}</textarea>
                             <button class="btn btn-primary mt-3"
                                 onclick="saveEditBait(`#input-bait-{{ $bait->id }}`)">Simpan</button>
                         </div>
@@ -52,14 +52,14 @@
 
                 <div class="m-l-10 m-t-10 p-10" style="width: 100%; border: 2px dashed #c4c4c4;">
                     <ul class="d-flex flex-row-reverse flex-wrap sortable" data-bait-id="{{ $bait->id }}"
-                        data-bab-id="{{ $bait->bab_id }}" data-post-id="{{ $bait->post_id }}">
-                        @foreach ($bait->kata as $kata)
+                        data-bab-id="{{ $bait->bab_id }}" data-post-id="{{ $bait->book_id }}">
+                        @foreach ($bait->words as $kata)
                             <li id="kata-{{ $kata->id }}"
                                 class="arab text-center m-3 float-right kata ui-state-default badge-kata"
                                 style="border-radius: 30px;padding: 10px; background-color: #fff6e3; cursor: pointer;"
                                 ondblclick="editDataWord(this)" data-id="{{ $kata->id }}"
-                                data-no="{{ $kata->no }}" data-bait-id="{{ $kata->bait_id }}"
-                                data-bab-id="{{ $kata->bab_id }}" data-post-id="{{ $kata->post_id }}">
+                                data-no="{{ $kata->no }}" data-bait-id="{{ $kata->chapters_id }}"
+                                data-bab-id="{{ $kata->bab_id }}" data-post-id="{{ $kata->book_id }}">
                                 <h1 class="arab text-dark harokat" style="display: none;">{{ $kata->arab_harokat }}
                                 </h1>
                                 <h1 class="arab text-dark nonharokat">{{ $kata->arab }}</h1>

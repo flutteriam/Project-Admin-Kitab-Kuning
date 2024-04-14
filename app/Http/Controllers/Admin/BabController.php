@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\PostBab;
-use App\Models\PostKata;
+use App\Http\Requests\Admin\BabCreateRequest;
+use App\Http\Requests\Admin\BabUpdateRequest;
+use App\Models\Bab;
 use App\Models\Category;
-use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Contracts\Support\Renderable;
-use App\Http\Requests\BabCreateRequest;
-use App\Http\Requests\BabUpdateRequest;
+use App\Models\Book;
+use App\Models\Word;
 
 class BabController extends Controller
 {
@@ -22,13 +22,13 @@ class BabController extends Controller
     public function index($id = null)
     {
         $categories = Category::all();
-        $active_post = null;
-        $all_post = null;
-        if($id) {
-            $active_post = Post::with('category')->find($id);
-            $all_post = Post::where('category_id', $active_post->category_id)->get();
+        $selectedBook = null;
+        $books = null;
+        if ($id) {
+            $selectedBook = Book::with('category')->find($id);
+            $books = Book::where('category_id', $selectedBook->category_id)->get();
         }
-        return view('post::bab', compact("categories", "active_post", "all_post"));
+        return view('admin.bab', compact("categories", "selectedBook", "books"));
     }
 
     /**
@@ -38,11 +38,16 @@ class BabController extends Controller
      */
     public function store(BabCreateRequest $request)
     {
-        $last_no = PostBab::where('post_id', $request->post_id)->latest()->first()->no ?? 0;
+        $order = Bab::where('book_id', $request->book_id)->count() + 1;
         $request->merge([
-            'no' => ($last_no + 1)
+            'order' => $order
         ]);
-        PostBab::create($request->all());
+        Bab::create([
+            'book_id' => $request->book_id,
+            'order' => $order,
+            'title' => $request->title,
+            'translate_title'=> $request->translate_title,
+        ]);
         return response()->json([
             'status' => true,
             'message' => [
@@ -61,7 +66,7 @@ class BabController extends Controller
     {
         return response()->json([
             'status' => true,
-            'data' => PostBab::where('post_id', $id)->get()
+            'data' => Bab::where('book_id', $id)->get()
         ], 200);
     }
 
@@ -74,7 +79,7 @@ class BabController extends Controller
     {
         return response()->json([
             'status' => true,
-            'data' => PostBab::with('post')->find($id)
+            'data' => Bab::with('post')->find($id)
         ], 200);
     }
 
@@ -86,9 +91,9 @@ class BabController extends Controller
      */
     public function update(BabUpdateRequest $request, $id)
     {
-        // $request->merge(['post_id' => $request('post_id_yy')]);
+        // $request->merge(['book_id' => $request('book_id_yy')]);
 
-        $bab = PostBab::find($id);
+        $bab = Bab::find($id);
         $bab->update($request->all());
         return response()->json([
             'status' => true,
@@ -106,8 +111,8 @@ class BabController extends Controller
      */
     public function destroy($id)
     {
-        $bab = PostBab::find($id);
-        $lower_bab = PostBab::where('no', '>', $bab->no)->get();
+        $bab = Bab::find($id);
+        $lower_bab = Bab::where('no', '>', $bab->no)->get();
         foreach ($lower_bab as $key => $value) {
             $temp_no = $value->no;
             $value->update([
@@ -124,31 +129,30 @@ class BabController extends Controller
         ], 200);
     }
 
-    public function ajax_post_detail($post_id) {
-        $babs = PostBab::where('post_id', $post_id)->with(['bait.kata' => function($q){
-            $q->orderBy('no', 'ASC');
+    public function ajax_post_detail($book_id)
+    {
+        $babs = Bab::where('book_id', $book_id)->with(['chapters.words' => function ($q) {
+            $q->orderBy('order', 'ASC');
         }])->get();
 
-        return view('post::ajax_bab_detail', compact("babs"));
+        return view('admin.ajax_bab_detail', compact("babs"));
     }
 
-    public function datatable(Request $request) {
-        $post_id = $request->post;
-        $bab = PostBab::where('post_id', $post_id)->with(['post', 'bait.kata' => function($q){
-            $q->orderBy('no', 'ASC');
+    public function datatable(Request $request)
+    {
+        $book_id = $request->post;
+        $bab = Bab::where('book_id', $book_id)->with(['book', 'chapters.words' => function ($q) {
+            $q->orderBy('order', 'ASC');
         }])->get();
 
-        // $bab = PostBab::when($post_id, function($q) use($post_id) {
-        //     $q->where('post_id', $post_id);
-        // })->with('post')->get();
         return DataTables::of($bab)
-            ->addColumn('aksi', function($aksi) {
+            ->addColumn('aksi', function ($aksi) {
                 return '<div class="btn-group">
-                <button type="button" class="btn btn-warning" onclick="editData('.$aksi->id.', this)">
+                <button type="button" class="btn btn-warning" onclick="editData(' . $aksi->id . ', this)">
                 <i class="fa fa-pencil"></i></button>
-                <button type="button" class="btn btn-info" onclick="detailData('.$aksi->id.')">
+                <button type="button" class="btn btn-info" onclick="detailData(' . $aksi->id . ')">
                 <i class="fa fa-eye"></i></button>
-                <button type="button" class="btn btn-danger" onclick="deleteData('.$aksi->id.', this)">
+                <button type="button" class="btn btn-danger" onclick="deleteData(' . $aksi->id . ', this)">
                 <i class="fa fa-trash"></i></button>';
             })
             ->rawColumns(['aksi'])
@@ -159,19 +163,19 @@ class BabController extends Controller
     {
         $kata = $request->post('kata');
         $babId = $request->post('babId');
-        $postId = $request->post('postId');
+        $bookId = $request->post('bookId');
         $baitId = $request->post('baitId');
 
         $conditions = [
-            'post_id' => $postId,
+            'book_id' => $bookId,
             'bab_id' => $babId,
             'bait_id' => $baitId,
         ];
 
-        $originalOrder = PostKata::where($conditions)->orderBy('no', 'ASC')->pluck('id')->toArray();
-        foreach($kata as $key => $value){
-            if($originalOrder[$key] !== $value){
-                PostKata::where('id', $value)->update(['no' => $key+1]);
+        $originalOrder = Word::where($conditions)->orderBy('no', 'ASC')->pluck('id')->toArray();
+        foreach ($kata as $key => $value) {
+            if ($originalOrder[$key] !== $value) {
+                Word::where('id', $value)->update(['no' => $key + 1]);
             }
         }
 

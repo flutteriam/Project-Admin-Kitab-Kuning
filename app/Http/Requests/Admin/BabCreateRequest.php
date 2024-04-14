@@ -14,7 +14,7 @@ class BabCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'post_id' => 'required',
+            'book_id' => 'required',
             'title' => 'required',
             'translate_title' => 'nullable'
         ];
