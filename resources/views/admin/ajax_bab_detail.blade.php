@@ -32,11 +32,11 @@
 
                     <div class="alert alert-light m-b-0 m-l-10" style="" role="alert" style="width: 100%;"
                         ondblclick="editTranslate(`{{ $bait->id }}`)">
-                        <div id="text-bait-{{ $bait->id }}">{!! $bait->translate_bait !!}</div>
+                        <div id="text-bait-{{ $bait->id }}">{!! $bait->translate !!}</div>
                         <div id="form-bait-{{ $bait->id }}" style="display:none;">
-                            <textarea name="translate_bait" class="form-control" id="input-bait-{{ $bait->id }}"
+                            <textarea name="translate" class="form-control" id="input-bait-{{ $bait->id }}"
                                 placeholder="Masukkan Translate Bait" cols="30" rows="5" data-id="{{ $bait->id }}"
-                                data-bab-id="{{ $bait->bab_id }}" data-post-id="{{ $bait->book_id }}">{!! $bait->translate_bait !!}</textarea>
+                                data-bab-id="{{ $bait->bab_id }}" data-post-id="{{ $bait->book_id }}">{!! $bait->translate !!}</textarea>
                             <button class="btn btn-primary mt-3"
                                 onclick="saveEditBait(`#input-bait-{{ $bait->id }}`)">Simpan</button>
                         </div>
@@ -58,7 +58,7 @@
                                 class="arab text-center m-3 float-right kata ui-state-default badge-kata"
                                 style="border-radius: 30px;padding: 10px; background-color: #fff6e3; cursor: pointer;"
                                 ondblclick="editDataWord(this)" data-id="{{ $kata->id }}"
-                                data-no="{{ $kata->no }}" data-bait-id="{{ $kata->chapters_id }}"
+                                data-no="{{ $kata->no }}" data-bait-id="{{ $kata->chapter_id }}"
                                 data-bab-id="{{ $kata->bab_id }}" data-post-id="{{ $kata->book_id }}">
                                 <h1 class="arab text-dark harokat" style="display: none;">{{ $kata->arab_harokat }}
                                 </h1>

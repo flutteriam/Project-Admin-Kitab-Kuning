@@ -147,7 +147,7 @@
                         </div>
                         <div class="form-group">
                             <label for="">Terjemahan</label>
-                            <textarea name="translate_bait" id="fieldTitleBait" cols="30" rows="5" class="form-control" required></textarea>
+                            <textarea name="translate" id="fieldTitleBait" cols="30" rows="5" class="form-control" required></textarea>
                         </div>
                         <div class="form-group">
                             <label for="">Keterangan</label>
@@ -342,14 +342,14 @@
 
         const get_post = (id_category, element) => {
             return new Promise((resolve, reject) => {
-                let url = `{{ route('post.show', ['id' => ':id']) }}`
+                let url = `{{ route('book.show', ['id' => ':id']) }}`
                 url = url.replace(':id', id_category)
                 $axios.get(`${url}`)
                     .then(({
                         data
                     }) => {
                         let post = data.data
-                        let html = `<option value="" selected disabled>== Pilih Post ==</option>`
+                        let html = `<option value="" selected disabled>== Pilih Kitab ==</option>`
                         $.each(post, (i, e) => {
                             html += `<option value="${e.id}">${e.title}</option>`
                         })
@@ -451,7 +451,7 @@
                     let FD = new FormData($("#form-data-bait")[0])
                     FD.set('full_bait', CKEDITOR.instances['fieldFullBait'].getData())
                     FD.set('full_bait_harokat', CKEDITOR.instances['fieldFullBaitHarokat'].getData())
-                    FD.set('translate_bait', CKEDITOR.instances['fieldTitleBait'].getData())
+                    FD.set('translate', CKEDITOR.instances['fieldTitleBait'].getData())
                     FD.set('description', CKEDITOR.instances['fieldDescription'].getData())
                     new Promise((resolve, reject) => {
                         $axios.post(`{{ route('bait.store') }}`, FD)
@@ -481,7 +481,7 @@
                     let FD = new FormData($("#form-data-bait")[0])
                     FD.set('full_bait', CKEDITOR.instances['fieldFullBait'].getData())
                     FD.set('full_bait_harokat', CKEDITOR.instances['fieldFullBaitHarokat'].getData())
-                    FD.set('translate_bait', CKEDITOR.instances['fieldTitleBait'].getData())
+                    FD.set('translate', CKEDITOR.instances['fieldTitleBait'].getData())
                     FD.set('description', CKEDITOR.instances['fieldDescription'].getData())
                     FD.set('_method', 'PUT')
                     new Promise((resolve, reject) => {
@@ -557,7 +557,7 @@
 
                         CKEDITOR.instances['fieldFullBait'].setData(bait.full_bait)
                         CKEDITOR.instances['fieldFullBaitHarokat'].setData(bait.full_bait_harokat)
-                        CKEDITOR.instances['fieldTitleBait'].setData(bait.translate_bait)
+                        CKEDITOR.instances['fieldTitleBait'].setData(bait.translate)
                         CKEDITOR.instances['fieldDescription'].setData(bait.description)
                         typeBait = 'PUT'
                         $("#modal-data-label-bait").html("Update Bait")
@@ -604,7 +604,7 @@
         }
 
         const detailDataBait = id => {
-            let url = `{{ route('chapter.index', ['id' => ':id']) }}`
+            let url = `{{ route('word.index', ['id' => ':id']) }}`
             url = url.replace(':id', id)
             window.location.href = `${url}`
         }
@@ -631,8 +631,8 @@
                         FD.set('translate_word', CKEDITOR.instances['fieldTranslate'].getData())
                         FD.set('basic_word', CKEDITOR.instances['fieldBasicWrod'].getData())
 
-                        // $axios.post(`{{ route('chapter.store') }}`, $("#form-data-word").serialize())
-                        $axios.post(`{{ route('chapter.store') }}`, FD)
+                        // $axios.post(`{{ route('word.store') }}`, $("#form-data-word").serialize())
+                        $axios.post(`{{ route('word.store') }}`, FD)
                             .then(({
                                 data
                             }) => {
@@ -657,7 +657,7 @@
                     })
                 } else if (typeWord == 'PUT') {
                     new Promise((resolve, reject) => {
-                        let url = `{{ route('chapter.update', ['chapter' => ':id']) }}`
+                        let url = `{{ route('word.update', ['word' => ':id']) }}`
                         url = url.replace(':id', $("#fieldIdWord").val())
                         let FD = new FormData($("#form-data-word")[0])
                         FD.set('translate_word', CKEDITOR.instances['fieldTranslate'].getData())
@@ -759,7 +759,7 @@
                     if (res.isConfirmed) {
                         loading('show', el)
                         new Promise((resolve, reject) => {
-                            let url = `{{ route('chapter.destroy', ['chapter' => ':id']) }}`
+                            let url = `{{ route('word.destroy', ['word' => ':id']) }}`
                             url = url.replace(':id', id)
                             $axios.delete(`${url}`)
                                 .then(({
@@ -788,7 +788,7 @@
             } = el.dataset;
             loading('show', el)
             new Promise((resolve, reject) => {
-                let url = `{{ route('chapter.edit', ['chapter' => ':id']) }}`
+                let url = `{{ route('word.edit', ['word' => ':id']) }}`
                 url = url.replace(':id', id)
                 $axios.get(`${url}`)
                     .then(({
@@ -796,22 +796,22 @@
                     }) => {
                         let chapter = data.data
 
-                        $("#btn-del-word").attr("data-kata_id", chapter.id)
+                        $("#btn-del-word").attr("data-kata_id", word.id)
                         $("#btn-del-word").show()
 
-                        $("#fieldCategoryWord").val(chapter.post.category_id)
-                        $("#fieldIdWord").val(chapter.id)
+                        $("#fieldCategoryWord").val(word.post.category_id)
+                        $("#fieldIdWord").val(word.id)
 
-                        $("#fieldPostWord").val(chapter.book_id)
-                        $("#fieldBabWord").val(chapter.bab_id)
-                        $("#fieldBaitWord").val(chapter.bait_id)
+                        $("#fieldPostWord").val(word.book_id)
+                        $("#fieldBabWord").val(word.bab_id)
+                        $("#fieldBaitWord").val(word.bait_id)
 
                         $("#modal-data-word").modal('show')
 
-                        $("#fieldArab").val(chapter.arab)
-                        $("#fieldArabHarokat").val(chapter.arab_harokat)
-                        CKEDITOR.instances['fieldTranslate'].setData(chapter.translate_word)
-                        CKEDITOR.instances['fieldBasicWrod'].setData(chapter.basic_word)
+                        $("#fieldArab").val(word.arab)
+                        $("#fieldArabHarokat").val(word.arab_harokat)
+                        CKEDITOR.instances['fieldTranslate'].setData(word.translate_word)
+                        CKEDITOR.instances['fieldBasicWrod'].setData(word.basic_word)
 
                         typeWord = 'PUT'
                         $("#modal-data-label-word").html("Update Bait")
@@ -840,7 +840,7 @@
             FD.append('id', id);
 
             new Promise((resolve, reject) => {
-                $axios.post(`{{ route('chapter.duplicate') }}`, FD)
+                $axios.post(`{{ route('word.duplicate') }}`, FD)
                     .then(({
                         data
                     }) => {
@@ -860,7 +860,7 @@
 
         const setDir = (id, type, el) => {
             new Promise((resolve, reject) => {
-                let url = `{{ route('chapter.patch', ['id' => ':id', 'type' => ':type']) }}`
+                let url = `{{ route('word.patch', ['id' => ':id', 'type' => ':type']) }}`
                 url = url.replace(':id', id)
                 url = url.replace(':type', type)
                 $axios.patch(`${url}`)
@@ -893,7 +893,7 @@
             const FD = new FormData();
 
             FD.append('_method', 'PUT')
-            FD.append('translate_bait', $(element).val())
+            FD.append('translate', $(element).val())
             FD.append('book_id', postId)
             FD.append('bab_id', babId)
 

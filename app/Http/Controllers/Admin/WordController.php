@@ -1,0 +1,215 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Requests\Admin\ChapterCreateRequest;
+use App\Http\Requests\Admin\ChapterUpdateRequest;
+use App\Models\Book;
+use App\Models\Bab;
+use App\Models\Category;
+use App\Models\Chapter;
+use App\Models\Word;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Contracts\Support\Renderable;
+
+class WordController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     * @return Renderable
+     */
+    public function index($id = null)
+    {
+        $categories = Category::all();
+        $bab = null;
+        $temp_book = null;
+        $book = null;
+        $first_bait = null;
+        $active_category = null;
+        if($id) {
+            $bab = Bab::with('book')->find($id);
+            $temp_book = Book::find($bab->book_id);
+            $book = Book::where('category_id', $temp_book->category_id)->get();
+            $active_category = Category::find($book->first()->category_id);
+            $first_bait = Chapter::where('bab_id', $bab->id)->orderBy('order', 'ASC')->first()->id;
+        }
+        return view('book::chapter', compact('categories', 'bab', 'temp_book', 'book', 'active_category', 'first_bait'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     * @param Request $request
+     * @return Renderable
+     */
+    public function store(ChapterCreateRequest $request)
+    {
+        $last_no = Word::where('bab_id', $request->bab_id)->where('chapter_id', $request->chapter_id)->latest()->first()->order ?? 0;
+        $request->merge([
+            'order' => ($last_no + 1)
+        ]);
+        Word::create($request->all());
+        return response()->json([
+            'status' => true,
+            'message' => [
+                'head' => 'Berhasil',
+                'body' => 'Menambahkan Kata baru'
+            ]
+        ], 200);
+    }
+
+    /**
+     * Show the specified resource.
+     * @param int $id
+     * @return Renderable
+     */
+    public function show($id)
+    {
+        // Id => id bait bukan id kata
+        return response()->json([
+            'status' => true,
+            'data' => Word::where('chapter_id', $id)->orderBy('order', 'ASC')->get()
+        ], 200);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     * @param int $id
+     * @return Renderable
+     */
+    public function edit($id)
+    {
+        $chapter = Word::with('book')->find($id);
+        return response()->json([
+            'status' => true,
+            'data' => $chapter
+        ],200);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     * @param Request $request
+     * @param int $id
+     * @return Renderable
+     */
+    public function update(ChapterUpdateRequest $request, $id)
+    {
+        $chapter = Word::find($id);
+        $chapter->update($request->all());
+        return response()->json([
+            'status' => true,
+            'message' => [
+                'head' => 'Berhasil',
+                'body' => 'Mengubah kata'
+            ]
+        ], 200);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     * @param int $id
+     * @return Renderable
+     */
+    public function destroy($id)
+    {
+        $kata = Word::find($id);
+        $nextWord = Word::where('order', '>', $kata->order)->get();
+        foreach ($nextWord as $word) {
+            $word->update(['order' => $word->order - 1]);
+        }
+        $kata->delete();
+        return response()->json([
+            'status' => true,
+            'message' => [
+                'head' => 'Berhasil',
+                'body' => 'Menghapus Kata'
+            ]
+        ], 200);
+    }
+
+    public function update_number($id, $type) {
+        $kata = Word::find($id);
+        $current_number = $kata->order;
+        // 1 Untuk naik, 2 untuk turun (kolom no)
+        if($kata->order == 1 && $type == 1) {
+            return $this->response_message('Error', 'Kata tersebut sudah paling awal');
+        } else {
+            // Jika Naik
+            if($type == 1) {
+                $atasnya = $current_number - 1;
+                $temp_kata = Word::where('chapter_id', $kata->chapter_id)->where('order', $atasnya)->first();
+                $kata->update([
+                    'order' => $atasnya
+                ]);
+                $temp_kata->update([
+                    'order' => $current_number
+                ]);
+            }
+            // Jika Turun
+            if($type == 2) {
+                $bawahnya = $current_number + 1;
+                $check_last = Word::where('chapter_id', $kata->chapter_id)->where('order', $bawahnya)->first();
+                // Jika Sudah Nomer Terkahir maka tidak bisa turun lagi boss
+                if(!$check_last) {
+                    return $this->response_message('Error', 'Kata tersebut sudah paling akhir');
+                } else {
+                    $kata->update([
+                        'order' => $bawahnya
+                    ]);
+                    $check_last->update([
+                        'order' => $current_number
+                    ]);
+                }
+            }
+            return $this->response_message('Sukses', 'Update Urutan Kata', 200);
+        }
+    }
+
+    public function duplicate(Request $request)
+    {
+        $id = $request->id;
+        $row = Word::find($id)->toArray(); //findone
+        $last = Word::where([
+            "book_id" => $row['book_id'],
+            "bab_id" => $row['bab_id'],
+            "chapter_id" => $row['chapter_id']
+        ])->orderBy('order', 'DESC')->first();
+        $row['order'] = $last->order+1;
+
+
+        Word::create($row);
+
+        return $this->response_message('Sukses', 'Duplikat Kata', 200);
+    }
+
+    public function datatable(Request $request) {
+        $bab_id = $request->bab;
+        $chapter_id = $request->bait;
+        $kata = Word::with('bait')
+                    ->where('bab_id', $bab_id)
+                    ->where('chapter_id', $chapter_id)
+                    ->orderBy('order', 'ASC')->get();
+        return DataTables::of($kata)
+            ->addColumn('aksi', function($aksi) {
+                return '<div class="btn-group">
+                            <button type="button" class="btn btn-warning" onclick="editData('.$aksi->id.', this)"> <i class="fa fa-pencil"></i></button>
+                            <button type="button" class="btn btn-info" onclick="setDir('.$aksi->id.', 1, this)"> <i class="fa fa-arrow-up"></i></button>
+                            <button type="button" class="btn btn-info" onclick="setDir('.$aksi->id.', 2, this)"> <i class="fa fa-arrow-down"></i></button>
+                            <button type="button" class="btn btn-danger" onclick="deleteData('.$aksi->id.', this)"> <i class="fa fa-trash"></i></button>
+                        </div>';
+            })
+            ->rawColumns(['aksi'])
+            ->make(true);
+    }
+
+    private function response_message($head, $body, $code = 500) {
+        return response()->json([
+            'status' => false,
+            'message' => [
+                'head' => $head,
+                'body' => $body
+            ]
+        ], $code);
+    }
+}

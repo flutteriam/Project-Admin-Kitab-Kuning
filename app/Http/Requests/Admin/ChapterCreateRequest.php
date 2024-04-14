@@ -14,7 +14,9 @@ class ChapterCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'book_id' => 'required',
+            'bab_id' => 'required',
+            'translate' => 'required',
         ];
     }
 
