@@ -24,7 +24,7 @@ use App\Http\Controllers\Admin\WordTemplateController;
 
 Route::prefix('datatable')->group(function () {
     Route::post('bab', [BabController::class, 'datatable'])->name('api.bab_datatable');
-    Route::post('bait', [ChapterController::class, 'datatable'])->name('api.bait_datatable');
+    Route::post('chapter', [ChapterController::class, 'datatable'])->name('api.chapter_datatable');
     Route::post('kata', [WordController::class, 'datatable'])->name('api.kata_post_datatable');
     Route::post('template', [WordTemplateController::class, 'datatable'])->name('api.word_template_datatable');
     Route::get('template/{id?}', [WordTemplateController::class, 'show'])->name('api.template_show');
@@ -58,12 +58,12 @@ Route::group(['middleware' => ['isAuth', 'isRole:admin|penginput']], function ()
     Route::put('bab/sort/{id}', [BabController::class, 'sort'])->name('bab.sort');
     Route::resource('bab', BabController::class)->except(['index', 'show']);
 
-    Route::get('bait/{id?}', [ChapterController::class, 'index'])->name('bait.index');
-    Route::get('bait/{id}/show', [ChapterController::class, 'show'])->name('bait.show');
-    Route::resource('bait', ChapterController::class)->except(['create', 'index', 'show']);
+    Route::get('chapter/{id?}', [ChapterController::class, 'index'])->name('chapter.index');
+    Route::get('chapter/{id}/show', [ChapterController::class, 'show'])->name('chapter.show');
+    Route::resource('chapter', ChapterController::class)->except(['create', 'index', 'show']);
 
     Route::get('word/{id?}', [WordController::class, 'index'])->name('word.index');
-    Route::get('word/{bait}/show', [WordController::class, 'show'])->name('word.show');
+    Route::get('word/{chapter}/show', [WordController::class, 'show'])->name('word.show');
     Route::post('word/duplicate', [WordController::class, 'duplicate'])->name('word.duplicate');
     Route::patch('word/{id}/{type}', [WordController::class, 'update_number'])->name('word.patch');
     Route::resource('word', WordController::class)->except(['index', 'show']);

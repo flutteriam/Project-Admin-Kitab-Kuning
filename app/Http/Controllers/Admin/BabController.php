@@ -164,13 +164,12 @@ class BabController extends Controller
         $bookId = $request->post('bookId');
         $chapterId = $request->post('chapterId');
 
-        $conditions = [
+        $originalOrder = Word::where([
             'book_id' => $bookId,
             'bab_id' => $babId,
             'chapter_id' => $chapterId,
-        ];
+        ])->orderBy('order', 'ASC')->pluck('id')->toArray();
 
-        $originalOrder = Word::where($conditions)->orderBy('order', 'ASC')->pluck('id')->toArray();
         foreach ($kata as $key => $value) {
             if ($originalOrder[$key] !== $value) {
                 Word::where('id', $value)->update(['order' => $key + 1]);

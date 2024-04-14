@@ -26,16 +26,16 @@ class WordController extends Controller
         $bab = null;
         $temp_book = null;
         $book = null;
-        $first_bait = null;
+        $first_chapter = null;
         $active_category = null;
         if ($id) {
             $bab = Bab::with('book')->find($id);
             $temp_book = Book::find($bab->book_id);
             $book = Book::where('category_id', $temp_book->category_id)->get();
             $active_category = Category::find($book->first()->category_id);
-            $first_bait = Chapter::where('bab_id', $bab->id)->orderBy('order', 'ASC')->first()->id;
+            $first_chapter = Chapter::where('bab_id', $bab->id)->orderBy('order', 'ASC')->first()->id;
         }
-        return view('book::chapter', compact('categories', 'bab', 'temp_book', 'book', 'active_category', 'first_bait'));
+        return view('book::chapter', compact('categories', 'bab', 'temp_book', 'book', 'active_category', 'first_chapter'));
     }
 
     /**
@@ -66,7 +66,7 @@ class WordController extends Controller
      */
     public function show($id)
     {
-        // Id => id bait bukan id kata
+        // Id => id chapter bukan id kata
         return response()->json([
             'status' => true,
             'data' => Word::where('chapter_id', $id)->orderBy('order', 'ASC')->get()

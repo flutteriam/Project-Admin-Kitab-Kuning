@@ -32,7 +32,7 @@ class ChapterController extends Controller
             $book = Book::where('category_id', $temp_book->category_id)->get();
             $active_category = Category::find($book->first()->category_id);
         }
-        return view('book::bait', compact('categories', 'bab', 'temp_book', 'book', 'active_category'));
+        return view('book::chapter', compact('categories', 'bab', 'temp_book', 'book', 'active_category'));
     }
 
     /**
@@ -79,12 +79,12 @@ class ChapterController extends Controller
      */
     public function edit($id)
     {
-        $bait = Chapter::with(['book', 'bab'])->find($id);
-        $category = $bait->first()->book->category->id;
+        $chapter = Chapter::with(['book', 'bab'])->find($id);
+        $category = $chapter->first()->book->category->id;
         return response()->json([
             'status' => true,
             'data' => [
-                'bait' => $bait,
+                'chapter' => $chapter,
                 'category' => $category
             ]
         ], 200);
@@ -98,8 +98,8 @@ class ChapterController extends Controller
      */
     public function update(ChapterUpdateRequest $request, $id)
     {
-        $bait = Chapter::find($id);
-        $bait->update([
+        $chapter = Chapter::find($id);
+        $chapter->update([
             'translate'=> $request->translate,
             'description'=> $request->description,
         ]);
@@ -107,7 +107,7 @@ class ChapterController extends Controller
             'status' => true,
             'message' => [
                 'head' => 'Berhasil',
-                'body' => 'Mengubah bait'
+                'body' => 'Mengubah chapter'
             ]
         ], 200);
     }

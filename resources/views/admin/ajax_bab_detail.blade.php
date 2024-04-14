@@ -22,44 +22,44 @@
 
                 @endforelse --}}
 
-            @foreach ($bab->chapters as $k_bait => $bait)
+            @foreach ($bab->chapters as $k_chapter => $chapter)
                 <div class="d-flex align-items-center m-l-10 m-t-10">
                     <h5 style="display: inherit;">
                         <div class="alert alert-warning dark m-r-5" role="alert"
-                            style="display: inline;padding: 0 6px;">{{ ++$k_bait }}</div>
+                            style="display: inline;padding: 0 6px;">{{ ++$k_chapter }}</div>
                         Bait/Kalimat
                     </h5>
 
                     <div class="alert alert-light m-b-0 m-l-10" style="" role="alert" style="width: 100%;"
-                        ondblclick="editTranslate(`{{ $bait->id }}`)">
-                        <div id="text-bait-{{ $bait->id }}">{!! $bait->translate !!}</div>
-                        <div id="form-bait-{{ $bait->id }}" style="display:none;">
-                            <textarea name="translate" class="form-control" id="input-bait-{{ $bait->id }}"
-                                placeholder="Masukkan Translate Bait" cols="30" rows="5" data-id="{{ $bait->id }}"
-                                data-bab-id="{{ $bait->bab_id }}" data-post-id="{{ $bait->book_id }}">{!! $bait->translate !!}</textarea>
+                        ondblclick="editTranslate(`{{ $chapter->id }}`)">
+                        <div id="text-chapter-{{ $chapter->id }}">{!! $chapter->translate !!}</div>
+                        <div id="form-chapter-{{ $chapter->id }}" style="display:none;">
+                            <textarea name="translate" class="form-control" id="input-chapter-{{ $chapter->id }}"
+                                placeholder="Masukkan Translate Bait" cols="30" rows="5" data-id="{{ $chapter->id }}"
+                                data-bab-id="{{ $chapter->bab_id }}" data-book-id="{{ $chapter->book_id }}">{!! $chapter->translate !!}</textarea>
                             <button class="btn btn-primary mt-3"
-                                onclick="saveEditBait(`#input-bait-{{ $bait->id }}`)">Simpan</button>
+                                onclick="saveEditBait(`#input-chapter-{{ $chapter->id }}`)">Simpan</button>
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-between m-l-10">
                         <button type="button" class="btn btn-warning"
-                            onclick="editDataBait(`{{ $bait->id }}`, this)"><i class="fa fa-pencil"></i></button>
+                            onclick="editDataBait(`{{ $chapter->id }}`, this)"><i class="fa fa-pencil"></i></button>
                         <button type="button" class="btn btn-danger m-l-5"
-                            onclick="deleteDataBait(`{{ $bait->id }}`, this)"><i class="fa fa-trash"></i></button>
+                            onclick="deleteDataBait(`{{ $chapter->id }}`, this)"><i class="fa fa-trash"></i></button>
                     </div>
                 </div>
 
                 <div class="m-l-10 m-t-10 p-10" style="width: 100%; border: 2px dashed #c4c4c4;">
-                    <ul class="d-flex flex-row-reverse flex-wrap sortable" data-bait-id="{{ $bait->id }}"
-                        data-bab-id="{{ $bait->bab_id }}" data-post-id="{{ $bait->book_id }}">
-                        @foreach ($bait->words as $kata)
+                    <ul class="d-flex flex-row-reverse flex-wrap sortable" data-chapter-id="{{ $chapter->id }}"
+                        data-bab-id="{{ $chapter->bab_id }}" data-book-id="{{ $chapter->book_id }}">
+                        @foreach ($chapter->words as $kata)
                             <li id="kata-{{ $kata->id }}"
                                 class="arab text-center m-3 float-right kata ui-state-default badge-kata"
                                 style="border-radius: 30px;padding: 10px; background-color: #fff6e3; cursor: pointer;"
                                 ondblclick="editDataWord(this)" data-id="{{ $kata->id }}"
-                                data-order="{{ $kata->order }}" data-bait-id="{{ $kata->chapter_id }}"
-                                data-bab-id="{{ $kata->bab_id }}" data-post-id="{{ $kata->book_id }}">
+                                data-order="{{ $kata->order }}" data-chapter-id="{{ $kata->chapter_id }}"
+                                data-bab-id="{{ $kata->bab_id }}" data-book-id="{{ $kata->book_id }}">
                                 <h1 class="arab text-dark harokat" style="display: none;">{{ $kata->arab_harokat }}
                                 </h1>
                                 <h1 class="arab text-dark nonharokat">{{ $kata->arab }}</h1>
@@ -70,7 +70,7 @@
                         <div class="d-flex m-1 float-right add-kata">
                             <i class="fa fa-plus-circle txt-success align-self-center"
                                 style="font-size: 50px; cursor: pointer;"
-                                onclick="addDataWord(`{{ $bab->id }}`, `{{ $bait->id }}`, this)"></i>
+                                onclick="addDataWord(`{{ $bab->id }}`, `{{ $chapter->id }}`, this)"></i>
                         </div>
                     </ul>
                 </div>
@@ -96,10 +96,10 @@
                 let {
                     babId,
                     chapterId,
-                    postId
+                    bookId
                 } = $(this)[0].dataset;
                 let data =
-                    `${$(this).sortable('serialize')}&babId=${babId}&chapterId=${chapterId}&postId=${postId}`;
+                    `${$(this).sortable('serialize')}&babId=${babId}&chapterId=${chapterId}&bookId=${bookId}`;
 
                 new Promise((resolve, reject) => {
                     let url = `{{ route('bab.sort', ['id' => ':id']) }}`

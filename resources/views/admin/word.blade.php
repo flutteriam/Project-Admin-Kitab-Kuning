@@ -42,7 +42,7 @@
                             @endif
                         </select>
                     </div>
-                    <input type="hidden" name="bait" id="inputNumberBait">
+                    <input type="hidden" name="chapter" id="inputNumberBait">
                     <div class="card-body digits row" id="fieldBaitNumber">
                     </div>
                 </div>
@@ -69,7 +69,7 @@
                 </div>
                 <form action="" method="post" id="formPostData">
                     @csrf
-                    <input type="hidden" name="post_id" id="fieldPostIdPost" value="{{ isset($bab) ? $bab->post_id : '' }}">
+                    <input type="hidden" name="book_id" id="fieldPostIdPost" value="{{ isset($bab) ? $bab->book_id : '' }}">
                     <input type="hidden" name="bab_id" id="fieldbabIdPost" value="{{ isset($bab) ? $bab->id : '' }}">
                     <input type="hidden" name="chapter_id" id="fieldBaitIdPost" value="">
                     <div class="row">
@@ -120,7 +120,7 @@
                     </div>
                     <div class="form-group">
                         <label for="">Post</label>
-                        <select name="post_id" id="fieldPost" autocomplete="off" class="form-control" required>
+                        <select name="book_id" id="fieldPost" autocomplete="off" class="form-control" required>
                             <option value="" selected disabled>== Pilih Post ==</option>
                         </select>
                     </div>
@@ -175,9 +175,9 @@
         $(".select2").select2()
         @if ($bab)
         load_paging()
-        $("#inputNumberBait").val({{ $first_bait }})
-        $("#fieldBaitIdPost").val({{ $first_bait }})
-        show_full_bait({{ $first_bait }})
+        $("#inputNumberBait").val({{ $first_chapter }})
+        $("#fieldBaitIdPost").val({{ $first_chapter }})
+        show_full_chapter({{ $first_chapter }})
         @endif
         translate1 = document.getElementById('fieldTranslateBaitPost')
         word1 = document.getElementById('fieldBasicWordPost')
@@ -216,7 +216,7 @@
                 type: "POST",
                 data: data => {
                     data.bab = $("#bab").val()
-                    data.bait = $("#inputNumberBait").val()
+                    data.chapter = $("#inputNumberBait").val()
                 }
             },
             columns : [
@@ -249,7 +249,7 @@
                             $('#modal-data').modal('hide')
                             loading('hide', $(".modal-content"))
                             table.ajax.reload()
-                            show_full_bait($("#inputNumberBait").val())
+                            show_full_chapter($("#inputNumberBait").val())
                             $swal.fire({
                                 icon: 'success',
                                 title: data.message.head,
@@ -267,7 +267,7 @@
                     let url = `{{ route('chapter.update', ['chapter' => ':id']) }}`
                     url = url.replace(':id', $("#fieldId").val())
                     let FD = new FormData($("#form-data")[0])
-                    FD.append('translate_bait', CKEDITOR.instances['fieldTranslate'].getData())
+                    FD.append('translate_chapter', CKEDITOR.instances['fieldTranslate'].getData())
                     FD.append('basic_word', CKEDITOR.instances['fieldBasicWrod'].getData())
                     FD.append('_method', "PUT")
                     $axios.post(`${url}`, FD)
@@ -275,7 +275,7 @@
                             $('#modal-data').modal('hide')
                             loading('hide', $(".modal-content"))
                             table.ajax.reload()
-                            show_full_bait($("#inputNumberBait").val())
+                            show_full_chapter($("#inputNumberBait").val())
                             $swal.fire({
                                 icon: 'success',
                                 title: data.message.head,
@@ -332,7 +332,7 @@
 
         $("#fieldBab").on('change', () => {
             loading('show', $("#fieldBait"))
-            get_bait($("#fieldBab").val(), 'fieldBait')
+            get_chapter($("#fieldBab").val(), 'fieldBait')
                 .then(() => loading('hide', $("#fieldBait")))
         })
 
@@ -357,13 +357,13 @@
                 $swal.fire({
                     icon: 'error',
                     title: 'Gagal',
-                    text: "Harap memilih Post, Bab dan bait terlebih dahulu"
+                    text: "Harap memilih Post, Bab dan chapter terlebih dahulu"
                 })
                 return false
             }
             e.preventDefault()
             let FD = new FormData($("#formPostData")[0])
-            FD.append('translate_bait', CKEDITOR.instances['fieldTranslateBaitPost'].getData())
+            FD.append('translate_chapter', CKEDITOR.instances['fieldTranslateBaitPost'].getData())
             FD.append('basic_word', CKEDITOR.instances['fieldBasicWordPost'].getData())
             new Promise((resolve, reject) => {
                 $axios.post(`{{ route('chapter.store') }}`, FD)
@@ -382,7 +382,7 @@
                         // $("#fieldTranslateBaitPost").val('')
                         // $("#fieldBasicWordPost").val('')
                         load_paging(true)
-                        show_full_bait($("#inputNumberBait").val())
+                        show_full_chapter($("#inputNumberBait").val())
                     })
                     .catch(err => {
                         throwErr(err)
@@ -415,8 +415,8 @@
         })
     })
 
-    $(document).on('click', ".card-body .digits > .bait", e => {
-        let comp = $(".bait")
+    $(document).on('click', ".card-body .digits > .chapter", e => {
+        let comp = $(".chapter")
         $.each(comp, (index, element) => {
             $(element).removeClass('badge-primary')
             if(!$(element).hasClass('badge-light')) {
@@ -425,44 +425,44 @@
         })
         $(e.currentTarget).removeClass("badge-light")
         $(e.currentTarget).addClass("badge-primary")
-        $("#inputNumberBait").val($(e.currentTarget).data('bait'))
-        $("#fieldBaitIdPost").val($(e.currentTarget).data('bait'))
-        show_full_bait($(e.currentTarget).data('bait'))
+        $("#inputNumberBait").val($(e.currentTarget).data('chapter'))
+        $("#fieldBaitIdPost").val($(e.currentTarget).data('chapter'))
+        show_full_chapter($(e.currentTarget).data('chapter'))
         table.ajax.reload()
     })
 
     const load_paging = (type = false) => {
         return new Promise((resolve, reject) => {
-            let url = `{{ route('bait.show', ['id' => ":id"]) }}`
+            let url = `{{ route('chapter.show', ['id' => ":id"]) }}`
             url = url.replace(':id', $("#bab").val())
             let numberBait = $("#inputNumberBait").val()
             $axios.get(`${url}`)
                 .then(({data}) => {
                     $(".card-body .digits").html(``)
                     let html = `<p class="my-auto">Bait : </p>`
-                    let bait = data.data
-                    if(bait.length > 0) {
-                        bait.forEach((e, i) => {
+                    let chapter = data.data
+                    if(chapter.length > 0) {
+                        chapter.forEach((e, i) => {
                             if(type) {
                                 if(e.id == numberBait) {
-                                    html += `<a href="javascript:void(0)" class="bait badge badge-primary mx-1 my-1" data-bait="${e.id}">${e.no}</a>`
+                                    html += `<a href="javascript:void(0)" class="chapter badge badge-primary mx-1 my-1" data-chapter="${e.id}">${e.no}</a>`
                                 } else {
-                                    html += `<a href="javascript:void(0)" class="bait badge badge-light mx-1 my-1" data-bait="${e.id}">${e.no}</a>`
+                                    html += `<a href="javascript:void(0)" class="chapter badge badge-light mx-1 my-1" data-chapter="${e.id}">${e.no}</a>`
                                 }
                             } else {
                                 if(i == 0) {
-                                    html += `<a href="javascript:void(0)" class="bait badge badge-primary mx-1 my-1" data-bait="${e.id}">${e.no}</a>`
+                                    html += `<a href="javascript:void(0)" class="chapter badge badge-primary mx-1 my-1" data-chapter="${e.id}">${e.no}</a>`
                                 } else {
-                                    html += `<a href="javascript:void(0)" class="bait badge badge-light mx-1 my-1" data-bait="${e.id}">${e.no}</a>`
+                                    html += `<a href="javascript:void(0)" class="chapter badge badge-light mx-1 my-1" data-chapter="${e.id}">${e.no}</a>`
                                 }
                             }
                         })
                     } else {
-                        html = `<p><small>Belum ada bait</small></p>`
+                        html = `<p><small>Belum ada chapter</small></p>`
                     }
                     $(".card-body .digits").html(html)
-                    if(bait.length > 0) {
-                        resolve(bait[0].id)
+                    if(chapter.length > 0) {
+                        resolve(chapter[0].id)
                     } else {
                         resolve(0)
                     }
@@ -507,16 +507,16 @@
         })
     }
 
-    const get_bait = (id_bab, element) => {
+    const get_chapter = (id_bab, element) => {
         return new Promise((resolve, reject) => {
-            let url = `{{ route('bait.show', ['id' => ":id"]) }}`
+            let url = `{{ route('chapter.show', ['id' => ":id"]) }}`
             url = url.replace(':id', $("#fieldBab").val())
             $axios.get(`${url}`)
                 .then(({data}) => {
                     let post = data.data
                     let html = `<option value="" selected disabled>== Pilih Bait ==</option>`
                     $.each(post, (i, e) => {
-                        html += `<option value="${e.id}">${e.translate_bait}</option>`
+                        html += `<option value="${e.id}">${e.translate_chapter}</option>`
                     })
                     $(`#${element}`).html(html)
                     resolve(post)
@@ -572,12 +572,12 @@
                     get_post(chapter.post.category_id, 'fieldPost')
                         .then(() => {
                             loading('hide', $("#fieldPost"))
-                            $("#fieldPost").val(chapter.post_id)
-                            get_bab(chapter.post_id, 'fieldBab')
+                            $("#fieldPost").val(chapter.book_id)
+                            get_bab(chapter.book_id, 'fieldBab')
                                 .then(() => {
                                     loading('hide', $("#fieldBab"))
                                     $("#fieldBab").val(chapter.bab_id)
-                                    get_bait(chapter.bab_id, 'fieldBait')
+                                    get_chapter(chapter.bab_id, 'fieldBait')
                                         .then(() => {
                                             loading('hide', $("#fieldBait"))
                                             $("#fieldBait").val(chapter.chapter_id)
@@ -599,22 +599,22 @@
         })
     }
 
-    const show_full_bait = id => {
+    const show_full_chapter = id => {
         new Promise((resolve, reject) => {
-            let url = `{{ route('chapter.show', ['bait' => ':id']) }}`
+            let url = `{{ route('chapter.show', ['chapter' => ':id']) }}`
             url = url.replace(':id', id)
             $axios.get(`${url}`)
                 .then(({data}) => {
                     let kata = data.data
-                    let preview_bait = ``
+                    let preview_chapter = ``
                     if(kata.length > 0) {
                         kata.forEach(e => {
-                        preview_bait += `<div class="badge m-1 kata" style="border-radius: 10px;padding: 10px; background-color: #eee">
+                        preview_chapter += `<div class="badge m-1 kata" style="border-radius: 10px;padding: 10px; background-color: #eee">
                                             <h3 class="arab">${e.arab_harokat}</h3>
                                         </div>`
                         })
                     }
-                    $("#fieldPreviewBait").html(preview_bait)
+                    $("#fieldPreviewBait").html(preview_chapter)
                 })
         })
     }
@@ -626,7 +626,7 @@
             url = url.replace(':type', type)
             $axios.patch(`${url}`)
                 .then(({data}) => {
-                    show_full_bait($("#inputNumberBait").val())
+                    show_full_chapter($("#inputNumberBait").val())
                     table.ajax.reload()
                     $swal.fire({
                         icon: 'success',

@@ -117,17 +117,17 @@
     </div>
 
     {{-- BAIT/KALIMAT --}}
-    <div class="modal fade" id="modal-data-bait" tabindex="-1" role="dialog" aria-labelledby="modal-dataLabel"
+    <div class="modal fade" id="modal-data-chapter" tabindex="-1" role="dialog" aria-labelledby="modal-dataLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modal-data-label-bait"></h5>
+                    <h5 class="modal-title" id="modal-data-label-chapter"></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="form-data-bait" method="POST">
+                <form id="form-data-chapter" method="POST">
                     @csrf
                     <input type="hidden" name="id" id="fieldIdBait">
                     <div class="modal-body">
@@ -137,12 +137,12 @@
 
                         <div class="form-group" style="display:none;">
                             <label for="">Full Bait <small>Non Harokat</small></label>
-                            <textarea name="full_bait" id="fieldFullBait" cols="30" rows="5" class="form-control"
+                            <textarea name="full_chapter" id="fieldFullBait" cols="30" rows="5" class="form-control"
                                 placeholder="Full Bait"></textarea>
                         </div>
                         <div class="form-group" style="display:none;">
                             <label for="">Full Bait <small>Harokat</small></label>
-                            <textarea name="full_bait_harokat" id="fieldFullBaitHarokat" cols="30" rows="5" class="form-control"
+                            <textarea name="full_chapter_harokat" id="fieldFullBaitHarokat" cols="30" rows="5" class="form-control"
                                 placeholder="Full Bait"></textarea>
                         </div>
                         <div class="form-group">
@@ -156,7 +156,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-secondary" id="btn-submit-bait">Simpan</button>
+                        <button type="submit" class="btn btn-secondary" id="btn-submit-chapter">Simpan</button>
                     </div>
                 </form>
             </div>
@@ -424,7 +424,7 @@
         }
 
         const detailData = id => {
-            let url = `{{ route('bait.index', ['id' => ':id']) }}`
+            let url = `{{ route('chapter.index', ['id' => ':id']) }}`
             url = url.replace(':id', id)
             window.location.href = `${url}`
         }
@@ -434,31 +434,31 @@
         let typeBait
         $(document).ready(() => {
 
-            fullbait2 = document.getElementById('fieldFullBait')
-            fullbaitHarokat2 = document.getElementById('fieldFullBaitHarokat')
+            fullchapter2 = document.getElementById('fieldFullBait')
+            fullchapterHarokat2 = document.getElementById('fieldFullBaitHarokat')
             translate2 = document.getElementById('fieldTitleBait')
             description2 = document.getElementById('fieldDescription')
-            CKEDITOR.replace(fullbait2)
-            CKEDITOR.replace(fullbaitHarokat2)
+            CKEDITOR.replace(fullchapter2)
+            CKEDITOR.replace(fullchapterHarokat2)
             CKEDITOR.replace(translate2)
             CKEDITOR.replace(description2)
 
-            $("#form-data-bait").on('submit', e => {
+            $("#form-data-chapter").on('submit', e => {
                 loading('show', $(".modal-content"))
                 e.preventDefault()
                 if (typeBait == "POST") {
                     // let FD = new FormData($("#formPostData")[0])
-                    let FD = new FormData($("#form-data-bait")[0])
-                    FD.set('full_bait', CKEDITOR.instances['fieldFullBait'].getData())
-                    FD.set('full_bait_harokat', CKEDITOR.instances['fieldFullBaitHarokat'].getData())
+                    let FD = new FormData($("#form-data-chapter")[0])
+                    FD.set('full_chapter', CKEDITOR.instances['fieldFullBait'].getData())
+                    FD.set('full_chapter_harokat', CKEDITOR.instances['fieldFullBaitHarokat'].getData())
                     FD.set('translate', CKEDITOR.instances['fieldTitleBait'].getData())
                     FD.set('description', CKEDITOR.instances['fieldDescription'].getData())
                     new Promise((resolve, reject) => {
-                        $axios.post(`{{ route('bait.store') }}`, FD)
+                        $axios.post(`{{ route('chapter.store') }}`, FD)
                             .then(({
                                 data
                             }) => {
-                                $('#modal-data-bait').modal('hide')
+                                $('#modal-data-chapter').modal('hide')
                                 loading('hide', $(".modal-content"))
 
                                 // table.ajax.reload()
@@ -478,20 +478,20 @@
                             })
                     })
                 } else if (typeBait == 'PUT') {
-                    let FD = new FormData($("#form-data-bait")[0])
-                    FD.set('full_bait', CKEDITOR.instances['fieldFullBait'].getData())
-                    FD.set('full_bait_harokat', CKEDITOR.instances['fieldFullBaitHarokat'].getData())
+                    let FD = new FormData($("#form-data-chapter")[0])
+                    FD.set('full_chapter', CKEDITOR.instances['fieldFullBait'].getData())
+                    FD.set('full_chapter_harokat', CKEDITOR.instances['fieldFullBaitHarokat'].getData())
                     FD.set('translate', CKEDITOR.instances['fieldTitleBait'].getData())
                     FD.set('description', CKEDITOR.instances['fieldDescription'].getData())
                     FD.set('_method', 'PUT')
                     new Promise((resolve, reject) => {
-                        let url = `{{ route('bait.update', ['bait' => ':id']) }}`
+                        let url = `{{ route('chapter.update', ['chapter' => ':id']) }}`
                         url = url.replace(':id', $("#fieldIdBait").val())
                         $axios.post(`${url}`, FD)
                             .then(({
                                 data
                             }) => {
-                                $('#modal-data-bait').modal('hide')
+                                $('#modal-data-chapter').modal('hide')
                                 loading('hide', $(".modal-content"))
 
                                 // table.ajax.reload()
@@ -516,9 +516,9 @@
         const addDataBait = (bab_id, el) => {
             loading('show', el)
 
-            $("#modal-data-label-bait").html("Tambah Bait")
-            $("#btn-submit-bait").html("Simpan")
-            $("#form-data-bait")[0].reset()
+            $("#modal-data-label-chapter").html("Tambah Bait")
+            $("#btn-submit-chapter").html("Simpan")
+            $("#form-data-chapter")[0].reset()
             CKEDITOR.instances['fieldFullBait'].setData('text')
             CKEDITOR.instances['fieldFullBaitHarokat'].setData('text')
             CKEDITOR.instances['fieldTitleBait'].setData('')
@@ -531,37 +531,37 @@
             $("#fieldBab").val(bab_id)
 
             typeBait = 'POST'
-            $("#modal-data-bait").modal('show')
+            $("#modal-data-chapter").modal('show')
             loading('hide', el)
         }
 
         const editDataBait = (id, el) => {
             loading('show', el)
             new Promise((resolve, reject) => {
-                let url = `{{ route('bait.edit', ['bait' => ':id']) }}`
+                let url = `{{ route('chapter.edit', ['chapter' => ':id']) }}`
                 url = url.replace(':id', id)
                 $axios.get(`${url}`)
                     .then(({
                         data
                     }) => {
-                        let bait = data.data.bait
+                        let chapter = data.data.chapter
                         let category = data.data.category
                         let post = data.data.post
                         let bab = data.data.bab
                         $("#fieldCategory").val(category)
-                        $("#fieldPost").val(bait.book_id)
-                        $("#fieldBab").val(bait.bab_id)
-                        $("#fieldIdBait").val(bait.id)
+                        $("#fieldPost").val(chapter.book_id)
+                        $("#fieldBab").val(chapter.bab_id)
+                        $("#fieldIdBait").val(chapter.id)
 
-                        $("#modal-data-bait").modal('show')
+                        $("#modal-data-chapter").modal('show')
 
-                        CKEDITOR.instances['fieldFullBait'].setData(bait.full_bait)
-                        CKEDITOR.instances['fieldFullBaitHarokat'].setData(bait.full_bait_harokat)
-                        CKEDITOR.instances['fieldTitleBait'].setData(bait.translate)
-                        CKEDITOR.instances['fieldDescription'].setData(bait.description)
+                        CKEDITOR.instances['fieldFullBait'].setData(chapter.full_chapter)
+                        CKEDITOR.instances['fieldFullBaitHarokat'].setData(chapter.full_chapter_harokat)
+                        CKEDITOR.instances['fieldTitleBait'].setData(chapter.translate)
+                        CKEDITOR.instances['fieldDescription'].setData(chapter.description)
                         typeBait = 'PUT'
-                        $("#modal-data-label-bait").html("Update Bait")
-                        $("#btn-submit-bait").html("Update")
+                        $("#modal-data-label-chapter").html("Update Bait")
+                        $("#btn-submit-chapter").html("Update")
                         loading('hide', el)
                     })
             })
@@ -582,7 +582,7 @@
                     if (res.isConfirmed) {
                         loading('show', el)
                         new Promise((resolve, reject) => {
-                            let url = `{{ route('bait.destroy', ['bait' => ':id']) }}`
+                            let url = `{{ route('chapter.destroy', ['chapter' => ':id']) }}`
                             url = url.replace(':id', id)
                             $axios.delete(`${url}`)
                                 .then(({
@@ -640,7 +640,7 @@
                                 loading('hide', $(".modal-content"))
 
                                 // table.ajax.reload()
-                                // show_full_bait($("#inputNumberBait").val())
+                                // show_full_chapter($("#inputNumberBait").val())
                                 $("#post").trigger('change')
 
                                 $swal.fire({
@@ -671,7 +671,7 @@
                                 loading('hide', $(".modal-content"))
 
                                 // table.ajax.reload()
-                                // show_full_bait($("#inputNumberBait").val())
+                                // show_full_chapter($("#inputNumberBait").val())
                                 $("#post").trigger('change')
 
                                 $swal.fire({
@@ -867,7 +867,7 @@
                     .then(({
                         data
                     }) => {
-                        show_full_bait($("#inputNumberBait").val())
+                        show_full_chapter($("#inputNumberBait").val())
                         table.ajax.reload()
                         $swal.fire({
                             icon: 'success',
@@ -880,25 +880,25 @@
         }
 
         const editTranslate = (id) => {
-            $(`#text-bait-${id}`).toggle();
-            $(`#form-bait-${id}`).toggle();
+            $(`#text-chapter-${id}`).toggle();
+            $(`#form-chapter-${id}`).toggle();
         }
 
         const saveEditBait = (element) => {
             let {
                 id,
                 babId,
-                postId
+                bookId
             } = $(element).data();
             const FD = new FormData();
 
             FD.append('_method', 'PUT')
             FD.append('translate', $(element).val())
-            FD.append('book_id', postId)
+            FD.append('book_id', bookId)
             FD.append('bab_id', babId)
 
             new Promise((resolve, reject) => {
-                let url = `{{ route('bait.update', ['bait' => ':id']) }}`
+                let url = `{{ route('chapter.update', ['chapter' => ':id']) }}`
                 url = url.replace(':id', id)
 
                 $axios.defaults.headers.common['X-CSRF-TOKEN'] = `{{ csrf_token() }}`;
