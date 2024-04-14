@@ -119,12 +119,15 @@ class ChapterController extends Controller
      */
     public function destroy($id)
     {
-        $bait = Chapter::find($id);
-        $nextChapter = Chapter::where('order', '>', $bait->order)->get();
+        $chapter = Chapter::find($id);
+        $nextChapter = Chapter::where([
+            ['bab_id', $chapter->bab_id],
+            ['order', '>', $chapter->order]
+        ])->get();
         foreach ($nextChapter as $chapter) {
             $chapter->update(['order' => $chapter->order - 1]);
         }
-        $bait->delete();
+        $chapter->delete();
         return response()->json([
             'status' => true,
             'message' => [

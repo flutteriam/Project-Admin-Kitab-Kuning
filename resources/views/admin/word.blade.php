@@ -71,7 +71,7 @@
                     @csrf
                     <input type="hidden" name="post_id" id="fieldPostIdPost" value="{{ isset($bab) ? $bab->post_id : '' }}">
                     <input type="hidden" name="bab_id" id="fieldbabIdPost" value="{{ isset($bab) ? $bab->id : '' }}">
-                    <input type="hidden" name="bait_id" id="fieldBaitIdPost" value="">
+                    <input type="hidden" name="chapter_id" id="fieldBaitIdPost" value="">
                     <div class="row">
                         <div class="col-md-6 mb-2">
                             <input type="text" name="arab" id="fieldArabPost" class="form-control" placeholder="Arab">
@@ -132,7 +132,7 @@
                     </div>
                     <div class="form-group">
                         <label for="">Bait</label>
-                        <select name="bait_id" id="fieldBait" autocomplete="off" class="form-control" required>
+                        <select name="chapter_id" id="fieldBait" autocomplete="off" class="form-control" required>
                             <option value="" selected disabled>== Pilih Bait ==</option>
                         </select>
                     </div>
@@ -580,7 +580,7 @@
                                     get_bait(chapter.bab_id, 'fieldBait')
                                         .then(() => {
                                             loading('hide', $("#fieldBait"))
-                                            $("#fieldBait").val(chapter.bait_id)
+                                            $("#fieldBait").val(chapter.chapter_id)
                                             $("#modal-data").modal('show')
                                         })
                                 })

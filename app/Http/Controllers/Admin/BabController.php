@@ -39,9 +39,6 @@ class BabController extends Controller
     public function store(BabCreateRequest $request)
     {
         $order = Bab::where('book_id', $request->book_id)->count() + 1;
-        $request->merge([
-            'order' => $order
-        ]);
         Bab::create([
             'book_id' => $request->book_id,
             'order' => $order,
@@ -113,7 +110,10 @@ class BabController extends Controller
     public function destroy($id)
     {
         $bab = Bab::find($id);
-        $nextBab = Bab::where('order', '>', $bab->order)->get();
+        $nextBab = Bab::where([
+            ['book_id', $bab->book_id],
+            ['order', '>', $bab->order]
+        ])->get();
         foreach ($nextBab as $bab) {
             $bab->update(['order' => $bab->order - 1]);
         }
@@ -162,18 +162,18 @@ class BabController extends Controller
         $kata = $request->post('kata');
         $babId = $request->post('babId');
         $bookId = $request->post('bookId');
-        $baitId = $request->post('baitId');
+        $chapterId = $request->post('chapterId');
 
         $conditions = [
             'book_id' => $bookId,
             'bab_id' => $babId,
-            'bait_id' => $baitId,
+            'chapter_id' => $chapterId,
         ];
 
-        $originalOrder = Word::where($conditions)->orderBy('no', 'ASC')->pluck('id')->toArray();
+        $originalOrder = Word::where($conditions)->orderBy('order', 'ASC')->pluck('id')->toArray();
         foreach ($kata as $key => $value) {
             if ($originalOrder[$key] !== $value) {
-                Word::where('id', $value)->update(['no' => $key + 1]);
+                Word::where('id', $value)->update(['order' => $key + 1]);
             }
         }
 

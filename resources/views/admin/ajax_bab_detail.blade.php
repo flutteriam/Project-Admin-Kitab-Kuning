@@ -58,7 +58,7 @@
                                 class="arab text-center m-3 float-right kata ui-state-default badge-kata"
                                 style="border-radius: 30px;padding: 10px; background-color: #fff6e3; cursor: pointer;"
                                 ondblclick="editDataWord(this)" data-id="{{ $kata->id }}"
-                                data-no="{{ $kata->no }}" data-bait-id="{{ $kata->chapter_id }}"
+                                data-order="{{ $kata->order }}" data-bait-id="{{ $kata->chapter_id }}"
                                 data-bab-id="{{ $kata->bab_id }}" data-post-id="{{ $kata->book_id }}">
                                 <h1 class="arab text-dark harokat" style="display: none;">{{ $kata->arab_harokat }}
                                 </h1>
@@ -95,11 +95,11 @@
             update: function(event, ui) {
                 let {
                     babId,
-                    baitId,
+                    chapterId,
                     postId
                 } = $(this)[0].dataset;
                 let data =
-                    `${$(this).sortable('serialize')}&babId=${babId}&baitId=${baitId}&postId=${postId}`;
+                    `${$(this).sortable('serialize')}&babId=${babId}&chapterId=${chapterId}&postId=${postId}`;
 
                 new Promise((resolve, reject) => {
                     let url = `{{ route('bab.sort', ['id' => ':id']) }}`

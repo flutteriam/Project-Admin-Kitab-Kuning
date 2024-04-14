@@ -179,10 +179,10 @@
                     <input type="hidden" name="id" id="fieldIdWord">
                     <div class="modal-body">
 
-                        <input type="hidden" name="category" id="fieldCategoryWord">
+                        <input type="hidden" name="category_id" id="fieldCategoryWord">
                         <input type="hidden" name="book_id" id="fieldPostWord">
                         <input type="hidden" name="bab_id" id="fieldBabWord">
-                        <input type="hidden" name="bait_id" id="fieldBaitWord">
+                        <input type="hidden" name="chapter_id" id="fieldBaitWord">
 
                         <div class="form-group">
                             <label for="">Arab</label>
@@ -195,11 +195,11 @@
                         </div>
                         <div class="form-group">
                             <label for="">Terjemahan Kata</label>
-                            <textarea name="translate_word" id="fieldTranslate" cols="30" rows="5" class="form-control" required></textarea>
+                            <textarea name="translate" id="fieldTranslate" cols="30" rows="5" class="form-control" required></textarea>
                         </div>
                         <div class="form-group" style="display: none;">
                             <label for="">Kata Dasar</label>
-                            <textarea name="basic_word" id="fieldBasicWrod" cols="30" rows="5" class="form-control" required></textarea>
+                            <textarea name="basic" id="fieldBasicWrod" cols="30" rows="5" class="form-control" required></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -628,8 +628,8 @@
                     new Promise((resolve, reject) => {
 
                         let FD = new FormData($("#form-data-word")[0])
-                        FD.set('translate_word', CKEDITOR.instances['fieldTranslate'].getData())
-                        FD.set('basic_word', CKEDITOR.instances['fieldBasicWrod'].getData())
+                        FD.set('translate', CKEDITOR.instances['fieldTranslate'].getData())
+                        FD.set('basic', CKEDITOR.instances['fieldBasicWrod'].getData())
 
                         // $axios.post(`{{ route('word.store') }}`, $("#form-data-word").serialize())
                         $axios.post(`{{ route('word.store') }}`, FD)
@@ -660,8 +660,8 @@
                         let url = `{{ route('word.update', ['word' => ':id']) }}`
                         url = url.replace(':id', $("#fieldIdWord").val())
                         let FD = new FormData($("#form-data-word")[0])
-                        FD.set('translate_word', CKEDITOR.instances['fieldTranslate'].getData())
-                        FD.set('basic_word', CKEDITOR.instances['fieldBasicWrod'].getData())
+                        FD.set('translate', CKEDITOR.instances['fieldTranslate'].getData())
+                        FD.set('basic', CKEDITOR.instances['fieldBasicWrod'].getData())
                         FD.append('_method', "PUT")
                         $axios.post(`${url}`, FD)
                             .then(({
@@ -698,7 +698,7 @@
                             `<option value="" disabled selected>== Pilih Template Kata ==</option>`
                         template_kata.forEach(e => {
                             html +=
-                                `<option data-arab="${e.arab}" data-arabharokat="${e.arab_harokat}" data-translate="${e.translate}" data-basicword="${e.basic_word}">${e.arab}</option>`
+                                `<option data-arab="${e.arab}" data-arabharokat="${e.arab_harokat}" data-translate="${e.translate}" data-basicword="${e.basic}">${e.arab}</option>`
                         })
                         $("#template_kata").html(html)
                     })
@@ -709,15 +709,15 @@
                 let arab = data.data('arab')
                 let arab_harokat = data.data('arabharokat')
                 let translate = data.data('translate')
-                let basic_word = data.data('basicword')
+                let basic = data.data('basicword')
                 $("#fieldArab").val(arab)
                 $("#fieldArabHarokat").val(arab_harokat)
                 CKEDITOR.instances['fieldTranslate'].setData(translate)
-                CKEDITOR.instances['fieldBasicWrod'].setData(basic_word)
+                CKEDITOR.instances['fieldBasicWrod'].setData(basic)
             })
         })
 
-        const addDataWord = (bab_id, bait_id, el) => {
+        const addDataWord = (bab_id, chapter_id, el) => {
             loading('show', el)
             $("#modal-data-label-word").html("Tambah Kata")
             $("#btn-submit-word").html("Simpan")
@@ -725,7 +725,7 @@
             $("#fieldCategoryWord").val($('#category').val())
             $("#fieldPostWord").val($('#post').val())
             $("#fieldBabWord").val(bab_id)
-            $("#fieldBaitWord").val(bait_id)
+            $("#fieldBaitWord").val(chapter_id)
 
             $("#fieldArab").val('')
             $("#fieldArabHarokat").val('')
@@ -794,24 +794,24 @@
                     .then(({
                         data
                     }) => {
-                        let chapter = data.data
+                        let word = data.data
 
                         $("#btn-del-word").attr("data-kata_id", word.id)
                         $("#btn-del-word").show()
 
-                        $("#fieldCategoryWord").val(word.post.category_id)
+                        $("#fieldCategoryWord").val(word.book.category_id)
                         $("#fieldIdWord").val(word.id)
 
                         $("#fieldPostWord").val(word.book_id)
                         $("#fieldBabWord").val(word.bab_id)
-                        $("#fieldBaitWord").val(word.bait_id)
+                        $("#fieldBaitWord").val(word.chapter_id)
 
                         $("#modal-data-word").modal('show')
 
                         $("#fieldArab").val(word.arab)
                         $("#fieldArabHarokat").val(word.arab_harokat)
-                        CKEDITOR.instances['fieldTranslate'].setData(word.translate_word)
-                        CKEDITOR.instances['fieldBasicWrod'].setData(word.basic_word)
+                        CKEDITOR.instances['fieldTranslate'].setData(word.translate)
+                        CKEDITOR.instances['fieldBasicWrod'].setData(word.basic)
 
                         typeWord = 'PUT'
                         $("#modal-data-label-word").html("Update Bait")
