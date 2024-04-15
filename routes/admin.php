@@ -4,7 +4,6 @@ use App\Http\Controllers\Admin\WordController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\BabController;
 use App\Http\Controllers\Admin\AuthController;
-use App\Http\Controllers\Admin\BaitController;
 use App\Http\Controllers\Admin\BookController;
 use App\Http\Controllers\Admin\ChapterController;
 use App\Http\Controllers\Admin\CategoryController;

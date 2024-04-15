@@ -53,7 +53,7 @@
                         <div class="auth-innerright">
                             <div class="authentication-box">
                                 <h4>LOGIN</h4>
-                                <h6>Enter your Email and Password For Login or Signup</h6>
+                                <h6>Masukkan email dan password untuk masuk</h6>
                                 <div class="card mt-4 p-4 mb-0">
                                     <form class="theme-form" id="formLogin">
                                         <div class="form-group">
@@ -69,7 +69,7 @@
                                             <label for="checkbox1">Remember me</label>
                                         </div>
                                         <div class="form-group form-row mt-3 mb-0">
-                                            <button type="submit" class="btn btn-secondary">LOGIN</button>
+                                            <button type="submit" class="btn btn-secondary">Masuk</button>
                                         </div>
                                     </form>
                                 </div>
