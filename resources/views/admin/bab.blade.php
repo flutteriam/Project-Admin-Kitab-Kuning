@@ -1,4 +1,4 @@
-@extends('layouts.master')
+@extends('layouts.master', ['title' => 'Bab'])
 
 @section('css')
     <style>
@@ -45,34 +45,40 @@
         <div class="col-sm-12">
             <div class="card">
                 <div class="card-header">
-                    <h5>Bab</h5>
-                </div>
-                <div class="card-body">
-                    <button class="btn btn-primary float-right" id="tambah-data"><i class="fa fa-plus"></i> Tambah</button>
-                    <div class="row mb-2">
-                        <div class="col-md-4">
-                            <select name="category" id="category" autocomplete="off" class="form-control">
-                                <option value="" selected disabled>== Pilih Kategori ==</option>
-                                @foreach ($categories as $key => $value)
-                                    <option value="{{ $value->id }}"
-                                        {{ isset($selectedBook) && $selectedBook->category_id == $value->id ? 'selected' : '' }}>
-                                        {{ $value->name }}</option>
-                                @endforeach
-                            </select>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <select name="category" id="category" autocomplete="off" class="form-control">
+                                        <option value="" selected disabled>== Pilih Kategori ==</option>
+                                        @foreach ($categories as $key => $value)
+                                            <option value="{{ $value->id }}"
+                                                {{ isset($selectedBook) && $selectedBook->category_id == $value->id ? 'selected' : '' }}>
+                                                {{ $value->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <select name="kitab" id="kitab" autocomplete="off" class="form-control">
+                                        <option value="" selected disabled>== Pilih Kitab ==</option>
+                                        @if ($selectedBook)
+                                            @foreach ($books as $value)
+                                                <option value="{{ $value->id }}"
+                                                    {{ $selectedBook->id == $value->id ? 'selected' : '' }}>
+                                                    {{ $value->title }}
+                                                </option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-4">
-                            <select name="post" id="post" autocomplete="off" class="form-control">
-                                <option value="" selected disabled>== Pilih Post ==</option>
-                                @if ($selectedBook)
-                                    @foreach ($books as $value)
-                                        <option value="{{ $value->id }}"
-                                            {{ $selectedBook->id == $value->id ? 'selected' : '' }}>{{ $value->title }}
-                                        </option>
-                                    @endforeach
-                                @endif
-                            </select>
+                        <div class="col-md-6 text-right">
+                            <button class="btn btn-primary" id="tambah-data"><i class="fa fa-plus"></i> Tambah</button>
                         </div>
                     </div>
+                </div>
+                <div class="card-body">
                     <div id="container-detail"></div>
                 </div>
             </div>
@@ -93,13 +99,22 @@
                     @csrf
                     <input type="hidden" name="id" id="fieldId">
                     <input type="hidden" name="category" id="inputCategory">
-                    <input type="hidden" name="book_id" id="inputPost"
+                    <input type="hidden" name="book_id" id="inputKitab"
                         value="{{ $selectedBook != null ? $selectedBook->id : '' }}">
                     <div class="modal-body">
 
                         <div class="form-group">
                             <label for="">Judul</label>
                             <input type="text" placeholder="Judul" name="title" id="fieldTitle" class="form-control">
+                        </div>
+                        <div class="form-group" id="orderForm" style="display:none">
+                            <label for="">Urutan</label>
+                            <br>
+                            <select name="order" id="fieldOrder">
+                                @for ($i = 1; $i <= $count; $i++)
+                                    <option value="{{ $i }}">{{ $i }}</option>
+                                @endfor
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="">Terjemahan Judul</label>
@@ -108,7 +123,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
                         <button type="submit" class="btn btn-secondary" id="btn-submit">Simpan</button>
                     </div>
                 </form>
@@ -132,22 +147,20 @@
                     <input type="hidden" name="id" id="fieldIdBait">
                     <div class="modal-body">
                         <input type="hidden" name="category" id="fieldCategory" value="">
-                        <input type="hidden" name="book_id" id="fieldPost" value="">
+                        <input type="hidden" name="book_id" id="fieldKitab" value="">
                         <input type="hidden" name="bab_id" id="fieldBab" value="">
-
-                        <div class="form-group" style="display:none;">
-                            <label for="">Full Bait <small>Non Harokat</small></label>
-                            <textarea name="full_chapter" id="fieldFullBait" cols="30" rows="5" class="form-control"
-                                placeholder="Full Bait"></textarea>
-                        </div>
-                        <div class="form-group" style="display:none;">
-                            <label for="">Full Bait <small>Harokat</small></label>
-                            <textarea name="full_chapter_harokat" id="fieldFullBaitHarokat" cols="30" rows="5" class="form-control"
-                                placeholder="Full Bait"></textarea>
-                        </div>
                         <div class="form-group">
                             <label for="">Terjemahan</label>
                             <textarea name="translate" id="fieldTitleBait" cols="30" rows="5" class="form-control" required></textarea>
+                        </div>
+                        <div class="form-group" id="orderFormBait" style="display:none">
+                            <label for="">Urutan</label>
+                            <br>
+                            <select name="order" id="fieldOrderBait">
+                                @for ($i = 1; $i <= $count; $i++)
+                                    <option value="{{ $i }}">{{ $i }}</option>
+                                @endfor
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="">Keterangan</label>
@@ -155,7 +168,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
                         <button type="submit" class="btn btn-secondary" id="btn-submit-chapter">Simpan</button>
                     </div>
                 </form>
@@ -180,7 +193,7 @@
                     <div class="modal-body">
 
                         <input type="hidden" name="category_id" id="fieldCategoryWord">
-                        <input type="hidden" name="book_id" id="fieldPostWord">
+                        <input type="hidden" name="book_id" id="fieldKitabWord">
                         <input type="hidden" name="bab_id" id="fieldBabWord">
                         <input type="hidden" name="chapter_id" id="fieldBaitWord">
 
@@ -203,7 +216,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
                         <button type="submit" class="btn btn-secondary" id="btn-submit-word">Simpan</button>
                         <button type="button" class="btn btn-danger m-r-10" id="btn-del-word" data-kata_id=""
                             onclick="deleteDataWord(this)">Hapus</button>
@@ -226,37 +239,38 @@
         let table
         let type
         $(document).ready(() => {
-            get_bab_by_post($("#post").val(), 'container-detail')
+            get_bab_by_kitab($("#kitab").val(), 'container-detail')
 
             CKEDITOR.replace('translate_title')
 
             $("#tambah-data").on('click', () => {
-                let post = $("#post").val()
+                let kitab = $("#kitab").val()
                 let category = $('#category').val()
-                if (!post || !category) {
-                    return $swal.fire('Gagal', 'Silahkan pilih kategori dan post terlebih dahuli', 'error')
+                if (!kitab || !category) {
+                    return $swal.fire('Gagal', 'Silahkan pilih kategori dan kitab terlebih dahulu', 'error')
                 }
+                $('#orderForm').css('display', 'none')
                 $("#modal-data-label").html("Tambah Bab")
                 $("#btn-submit").html("Simpan")
                 // $("#form-data")[0].reset()
                 CKEDITOR.instances['fieldTransTitle'].setData('')
                 $("#fieldTitle").val('')
                 $("#fieldTransTitle").val('')
-                $("#fieldPost").html(`<option selected disabled>== Pilih Post ==</option>`)
+                $("#fieldKitab").html(`<option selected disabled>== Pilih Kitab ==</option>`)
                 type = 'POST'
                 $("#modal-data").modal('show')
             })
 
             $("#fieldCategory").on('change', () => {
-                loading('show', $("#fieldPost"))
-                get_post($("#fieldCategory").val(), 'fieldPost')
-                    .then(() => loading('hide', $("#fieldPost")))
+                loading('show', $("#fieldKitab"))
+                get_kitab($("#fieldCategory").val(), 'fieldKitab')
+                    .then(() => loading('hide', $("#fieldKitab")))
             })
 
             $("#category").on('change', () => {
-                loading('show', $("#post"))
-                get_post($("#category").val(), 'post')
-                    .then(() => loading('hide', $("#post")))
+                loading('show', $("#kitab"))
+                get_kitab($("#category").val(), 'kitab')
+                    .then(() => loading('hide', $("#kitab")))
             })
 
             $("#form-data").on('submit', e => {
@@ -279,7 +293,7 @@
                                     text: data.message.body
                                 })
 
-                                $("#post").trigger('change')
+                                $("#kitab").trigger('change')
                             })
                             .catch(err => {
                                 loading('hide', $(".modal-content"))
@@ -304,7 +318,7 @@
                                     text: data.message.body
                                 })
 
-                                $("#post").trigger('change')
+                                $("#kitab").trigger('change')
                             })
                             .catch(err => {
                                 loading('hide', $(".modal-content"))
@@ -314,25 +328,32 @@
                 }
             })
 
-            $("#post").on('change', () => {
-                get_bab_by_post($("#post").val(), 'container-detail')
+            $("#kitab").on('change', () => {
+                get_bab_by_kitab($("#kitab").val(), 'container-detail')
 
                 $("#inputCategory").val($("#category").val())
-                $("#inputPost").val($("#post").val())
-                // table.ajax.reload()
+                $("#inputKitab").val($("#kitab").val())
             })
         })
 
-        const get_bab_by_post = (id_post, element) => {
+        const get_bab_by_kitab = (id_kitab, element) => {
             return new Promise((resolve, reject) => {
-                let url = `{{ route('post.ajax.detail', ['id' => ':id']) }}`
-                url = url.replace(':id', id_post)
+                let url = `{{ route('bab.index', ['id' => ':id']) }}`
+                url = url.replace(':id', id_kitab)
                 $axios.get(`${url}`)
                     .then(({
                         data
                     }) => {
-                        $(`#${element}`).html(data)
-                        resolve(data)
+                        $(`#${element}`).html(data.view)
+                        resolve(data.view)
+                        $('#fieldOrder').empty();
+
+                        for (var i = 1; i <= data.count; i++) {
+                            $('#fieldOrder').append($('<option>', {
+                                value: i,
+                                text: i
+                            }));
+                        }
                     })
                     .catch(err => {
                         reject(err)
@@ -340,21 +361,21 @@
             })
         }
 
-        const get_post = (id_category, element) => {
+        const get_kitab = (id_category, element) => {
             return new Promise((resolve, reject) => {
-                let url = `{{ route('book.show', ['id' => ':id']) }}`
+                let url = `{{ route('kitab.show', ['kitab' => ':id']) }}`
                 url = url.replace(':id', id_category)
                 $axios.get(`${url}`)
                     .then(({
                         data
                     }) => {
-                        let post = data.data
+                        let kitab = data.data
                         let html = `<option value="" selected disabled>== Pilih Kitab ==</option>`
-                        $.each(post, (i, e) => {
+                        $.each(kitab, (i, e) => {
                             html += `<option value="${e.id}">${e.title}</option>`
                         })
                         $(`#${element}`).html(html)
-                        resolve(post)
+                        resolve(kitab)
                     })
                     .catch(err => {
                         reject(err)
@@ -374,8 +395,10 @@
                         let bab = data.data
                         $("#fieldId").val(bab.id)
                         $("#inputCategory").val(bab.book.category_id)
-                        $("#inputPost").val(bab.book.id)
+                        $("#inputKitab").val(bab.book.id)
                         $("#fieldTitle").val(bab.title)
+                        $("#fieldOrder").val(bab.order)
+                        $('#orderForm').css('display', 'block')
                         CKEDITOR.instances['fieldTransTitle'].setData(bab.translate_title)
                         type = 'PUT'
                         loading('hide', el)
@@ -414,7 +437,7 @@
                                         text: data.message.body
                                     })
 
-                                    $("#post").trigger('change')
+                                    $("#kitab").trigger('change')
 
                                     // table.ajax.reload()
                                 })
@@ -434,12 +457,8 @@
         let typeBait
         $(document).ready(() => {
 
-            fullchapter2 = document.getElementById('fieldFullBait')
-            fullchapterHarokat2 = document.getElementById('fieldFullBaitHarokat')
             translate2 = document.getElementById('fieldTitleBait')
             description2 = document.getElementById('fieldDescription')
-            CKEDITOR.replace(fullchapter2)
-            CKEDITOR.replace(fullchapterHarokat2)
             CKEDITOR.replace(translate2)
             CKEDITOR.replace(description2)
 
@@ -447,10 +466,7 @@
                 loading('show', $(".modal-content"))
                 e.preventDefault()
                 if (typeBait == "POST") {
-                    // let FD = new FormData($("#formPostData")[0])
                     let FD = new FormData($("#form-data-chapter")[0])
-                    FD.set('full_chapter', CKEDITOR.instances['fieldFullBait'].getData())
-                    FD.set('full_chapter_harokat', CKEDITOR.instances['fieldFullBaitHarokat'].getData())
                     FD.set('translate', CKEDITOR.instances['fieldTitleBait'].getData())
                     FD.set('description', CKEDITOR.instances['fieldDescription'].getData())
                     new Promise((resolve, reject) => {
@@ -462,7 +478,7 @@
                                 loading('hide', $(".modal-content"))
 
                                 // table.ajax.reload()
-                                $("#post").trigger('change')
+                                $("#kitab").trigger('change')
 
                                 CKEDITOR.instances['fieldTitleBait'].setData('')
                                 CKEDITOR.instances['fieldDescription'].setData('')
@@ -479,8 +495,6 @@
                     })
                 } else if (typeBait == 'PUT') {
                     let FD = new FormData($("#form-data-chapter")[0])
-                    FD.set('full_chapter', CKEDITOR.instances['fieldFullBait'].getData())
-                    FD.set('full_chapter_harokat', CKEDITOR.instances['fieldFullBaitHarokat'].getData())
                     FD.set('translate', CKEDITOR.instances['fieldTitleBait'].getData())
                     FD.set('description', CKEDITOR.instances['fieldDescription'].getData())
                     FD.set('_method', 'PUT')
@@ -494,8 +508,7 @@
                                 $('#modal-data-chapter').modal('hide')
                                 loading('hide', $(".modal-content"))
 
-                                // table.ajax.reload()
-                                $("#post").trigger('change')
+                                $("#kitab").trigger('change')
 
                                 $swal.fire({
                                     icon: 'success',
@@ -519,15 +532,15 @@
             $("#modal-data-label-chapter").html("Tambah Bait")
             $("#btn-submit-chapter").html("Simpan")
             $("#form-data-chapter")[0].reset()
-            CKEDITOR.instances['fieldFullBait'].setData('text')
-            CKEDITOR.instances['fieldFullBaitHarokat'].setData('text')
             CKEDITOR.instances['fieldTitleBait'].setData('')
             CKEDITOR.instances['fieldDescription'].setData('')
 
             $("#fieldIdBait").val('')
 
+            $('#orderFormBait').css('display', 'none')
+
             $("#fieldCategory").val($('#category').val())
-            $("#fieldPost").val($('#post').val())
+            $("#fieldKitab").val($('#kitab').val())
             $("#fieldBab").val(bab_id)
 
             typeBait = 'POST'
@@ -535,7 +548,7 @@
             loading('hide', el)
         }
 
-        const editDataBait = (id, el) => {
+        const editDataBait = (id, count, el) => {
             loading('show', el)
             new Promise((resolve, reject) => {
                 let url = `{{ route('chapter.edit', ['chapter' => ':id']) }}`
@@ -546,17 +559,26 @@
                     }) => {
                         let chapter = data.data.chapter
                         let category = data.data.category
-                        let post = data.data.post
                         let bab = data.data.bab
                         $("#fieldCategory").val(category)
-                        $("#fieldPost").val(chapter.book_id)
+                        $("#fieldKitab").val(chapter.book_id)
                         $("#fieldBab").val(chapter.bab_id)
                         $("#fieldIdBait").val(chapter.id)
+                        $("#fieldOrderBait").val(chapter.order)
+                        $('#orderFormBait').css('display', 'block')
 
                         $("#modal-data-chapter").modal('show')
 
-                        CKEDITOR.instances['fieldFullBait'].setData(chapter.full_chapter)
-                        CKEDITOR.instances['fieldFullBaitHarokat'].setData(chapter.full_chapter_harokat)
+
+                        $('#fieldOrderBait').empty();
+
+                        for (var i = 1; i <= count; i++) {
+                            $('#fieldOrderBait').append($('<option>', {
+                                value: i,
+                                text: i
+                            }));
+                        }
+
                         CKEDITOR.instances['fieldTitleBait'].setData(chapter.translate)
                         CKEDITOR.instances['fieldDescription'].setData(chapter.description)
                         typeBait = 'PUT'
@@ -596,7 +618,7 @@
                                     })
 
                                     // table.ajax.reload()
-                                    $("#post").trigger('change')
+                                    $("#kitab").trigger('change')
                                 })
                         })
                     }
@@ -631,17 +653,13 @@
                         FD.set('translate', CKEDITOR.instances['fieldTranslate'].getData())
                         FD.set('basic', CKEDITOR.instances['fieldBasicWrod'].getData())
 
-                        // $axios.post(`{{ route('word.store') }}`, $("#form-data-word").serialize())
                         $axios.post(`{{ route('word.store') }}`, FD)
                             .then(({
                                 data
                             }) => {
                                 $('#modal-data-word').modal('hide')
                                 loading('hide', $(".modal-content"))
-
-                                // table.ajax.reload()
-                                // show_full_chapter($("#inputNumberBait").val())
-                                $("#post").trigger('change')
+                                $("#kitab").trigger('change')
 
                                 $swal.fire({
                                     icon: 'success',
@@ -669,10 +687,7 @@
                             }) => {
                                 $('#modal-data-word').modal('hide')
                                 loading('hide', $(".modal-content"))
-
-                                // table.ajax.reload()
-                                // show_full_chapter($("#inputNumberBait").val())
-                                $("#post").trigger('change')
+                                $("#kitab").trigger('change')
 
                                 $swal.fire({
                                     icon: 'success',
@@ -687,35 +702,7 @@
                     })
                 }
             })
-
-            new Promise((resolve, reject) => {
-                $axios.get(`{{ route('api.template_show') }}`)
-                    .then(({
-                        data
-                    }) => {
-                        let template_kata = data.data
-                        let html =
-                            `<option value="" disabled selected>== Pilih Template Kata ==</option>`
-                        template_kata.forEach(e => {
-                            html +=
-                                `<option data-arab="${e.arab}" data-arabharokat="${e.arab_harokat}" data-translate="${e.translate}" data-basicword="${e.basic}">${e.arab}</option>`
-                        })
-                        $("#template_kata").html(html)
-                    })
-            })
-
-            $("#template_kata").on('change', () => {
-                let data = $("#template_kata").find(':selected')
-                let arab = data.data('arab')
-                let arab_harokat = data.data('arabharokat')
-                let translate = data.data('translate')
-                let basic = data.data('basicword')
-                $("#fieldArab").val(arab)
-                $("#fieldArabHarokat").val(arab_harokat)
-                CKEDITOR.instances['fieldTranslate'].setData(translate)
-                CKEDITOR.instances['fieldBasicWrod'].setData(basic)
-            })
-        })
+        });
 
         const addDataWord = (bab_id, chapter_id, el) => {
             loading('show', el)
@@ -723,7 +710,7 @@
             $("#btn-submit-word").html("Simpan")
             $("#form-data-word")[0].reset()
             $("#fieldCategoryWord").val($('#category').val())
-            $("#fieldPostWord").val($('#post').val())
+            $("#fieldKitabWord").val($('#kitab').val())
             $("#fieldBabWord").val(bab_id)
             $("#fieldBaitWord").val(chapter_id)
 
@@ -731,7 +718,6 @@
             $("#fieldArabHarokat").val('')
             CKEDITOR.instances['fieldTranslate'].setData('')
             CKEDITOR.instances['fieldBasicWrod'].setData('text')
-            $("#template_kata").val('').trigger('change')
 
             $("#btn-del-word").hide()
 
@@ -773,7 +759,7 @@
                                     })
                                     // table.ajax.reload()
 
-                                    $("#post").trigger('change')
+                                    $("#kitab").trigger('change')
                                     $('#modal-data-word').modal('hide')
                                 })
                         })
@@ -802,7 +788,7 @@
                         $("#fieldCategoryWord").val(word.book.category_id)
                         $("#fieldIdWord").val(word.id)
 
-                        $("#fieldPostWord").val(word.book_id)
+                        $("#fieldKitabWord").val(word.book_id)
                         $("#fieldBabWord").val(word.bab_id)
                         $("#fieldBaitWord").val(word.chapter_id)
 
@@ -844,7 +830,7 @@
                     .then(({
                         data
                     }) => {
-                        $("#post").trigger('change')
+                        $("#kitab").trigger('change')
 
                         $swal.fire({
                             icon: 'success',
@@ -912,7 +898,7 @@
                             text: data.message.body
                         })
 
-                        $("#post").trigger('change')
+                        $("#kitab").trigger('change')
                     })
                     .catch(err => {
                         throwErr(err)

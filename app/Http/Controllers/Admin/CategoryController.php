@@ -15,14 +15,26 @@ use App\Http\Requests\Admin\CategoryUpdateRequest;
 class CategoryController extends Controller
 {
     private $path_image = 'categories';
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
-    public function index()
+
+
+    public function index(Request $request)
     {
-        $count = Category::count();
-        return view('admin.category', ['count' => $count]);
+        if ($request->ajax()) {
+            $category = Category::all();
+            return DataTables::of($category)
+                ->addColumn('aksi', function ($aksi) {
+                    return '<div class="btn-group">
+                <button type="button" class="btn btn-warning" onclick="editData(' . $aksi->id . ', this)">
+                <i class="fa fa-pencil"></i></button>
+                <button type="button" class="btn btn-danger" onclick="deleteData(' . $aksi->id . ', this)">
+                <i class="fa fa-trash"></i></button>';
+                })
+                ->rawColumns(['aksi'])
+                ->make(true);
+        } else {
+            $count = Category::count();
+            return view('admin.category', ['count' => $count]);
+        }
     }
 
     /**
@@ -137,20 +149,5 @@ class CategoryController extends Controller
                 'body' => 'Menghapus Kategori'
             ]
         ], 200);
-    }
-
-    public function datatable()
-    {
-        $category = Category::all();
-        return DataTables::of($category)
-            ->addColumn('aksi', function ($aksi) {
-                return '<div class="btn-group">
-                <button type="button" class="btn btn-warning" onclick="editData(' . $aksi->id . ', this)">
-                <i class="fa fa-pencil"></i></button>
-                <button type="button" class="btn btn-danger" onclick="deleteData(' . $aksi->id . ', this)">
-                <i class="fa fa-trash"></i></button>';
-            })
-            ->rawColumns(['aksi'])
-            ->make(true);
     }
 }

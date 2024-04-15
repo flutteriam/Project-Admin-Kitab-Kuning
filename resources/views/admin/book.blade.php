@@ -5,10 +5,7 @@
         <div class="col-sm-12">
             <div class="card">
                 <div class="card-header">
-                    <h5>Kitab</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row mb-2">
+                    <div class="row">
                         <div class="col-md-4">
                             <select name="category" id="category" autocomplete="off" class="form-control">
                                 <option value="" selected disabled>== Pilih Kategori ==</option>
@@ -24,6 +21,8 @@
                                 Tambah</button>
                         </div>
                     </div>
+                </div>
+                <div class="card-body">
                     <div class="table-responsive">
                         <table id="table-data" class="display datatables">
                             <thead>
@@ -54,7 +53,6 @@
                 </div>
                 <form id="form-data" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <!-- <input type="hidden" name="category_id" id="fieldCategory"> -->
                     <input type="hidden" name="id" id="fieldId">
                     <div class="modal-body">
                         <div class="row">
@@ -150,8 +148,7 @@
                     [10, 25, 50, 100, 200, 300, 500, 1000, "All"]
                 ],
                 ajax: {
-                    url: "{{ route('api.book_datatable') }}",
-                    type: "POST",
+                    url: "{{ route('kitab.index') }}",
                     data: data => {
                         data.category = $("#category").val()
                     }
@@ -226,7 +223,7 @@
                 FD.append('cover', document.querySelector('#fieldImage').files[0])
                 if (type == "POST") {
                     new Promise((resolve, reject) => {
-                        $axios.post(`{{ route('book.store') }}`, FD, {
+                        $axios.post(`{{ route('kitab.store') }}`, FD, {
                                 headers: {
                                     'Content-Type': 'multipart/form-data'
                                 }
@@ -250,7 +247,7 @@
                     })
                 } else if (type == 'PUT') {
                     new Promise((resolve, reject) => {
-                        let url = `{{ route('book.update', ['book' => ':id']) }}`
+                        let url = `{{ route('kitab.update', ['kitab' => ':id']) }}`
                         url = url.replace(':id', $("#fieldId").val())
                         FD.append('_method', 'PUT')
                         $axios.post(`${url}`, FD, {
@@ -283,7 +280,7 @@
         const editData = (id, el) => {
             loading('show', el)
             new Promise((resolve, reject) => {
-                let url = `{{ route('book.edit', ['book' => ':id']) }}`
+                let url = `{{ route('kitab.edit', ['kitab' => ':id']) }}`
                 url = url.replace(':id', id)
                 $axios.get(`${url}`)
                     .then(({
@@ -329,7 +326,7 @@
                     if (res.isConfirmed) {
                         loading('show', el)
                         new Promise((resolve, reject) => {
-                            let url = `{{ route('book.destroy', ['book' => ':id']) }}`
+                            let url = `{{ route('kitab.destroy', ['kitab' => ':id']) }}`
                             url = url.replace(':id', id)
                             $axios.delete(`${url}`)
                                 .then(({

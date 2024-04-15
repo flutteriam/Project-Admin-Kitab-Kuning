@@ -17,18 +17,25 @@ class BookController extends Controller
 {
     private $path_image = 'books';
 
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
-    public function index($id = null)
+    public function index(Request $request)
     {
-        $categories = Category::all();
-        $active_category = null;
-        if($id) {
-            $active_category = Category::find($id);
+        if ($request->ajax()) {
+            $category = $request->category;
+            $book = Book::with('category')->where('category_id', $category)->get();
+            return DataTables::of($book)
+                ->addColumn('aksi', function ($aksi) {
+                    return '<div class="btn-group">
+                <button type="button" class="btn btn-warning" onclick="editData(' . $aksi->id . ', this)">
+                <i class="fa fa-pencil"></i></button>
+                <button type="button" class="btn btn-danger" onclick="deleteData(' . $aksi->id . ', this)">
+                <i class="fa fa-trash"></i></button>';
+                })
+                ->rawColumns(['aksi'])
+                ->make(true);
+        } else {
+            $categories = Category::all();
+            return view('admin.book', compact('categories'));
         }
-        return view('admin.book', compact('categories', 'active_category'));
     }
 
     /**
@@ -47,7 +54,7 @@ class BookController extends Controller
 
             $image = $this->path_image . '/' . $imageName;
         }
-        $data = $request->except('_token');
+        $data = $request->except(['_token', 'id']);
         $slug = Str::slug($request->name);
         $data['cover'] = $image ?? null;
         $data['likes'] = 0;
@@ -145,20 +152,5 @@ class BookController extends Controller
                 'body' => 'Menghapus Kitab'
             ]
         ], 200);
-    }
-
-    public function datatable(Request $request) {
-        $category = $request->category;
-        $post = Book::with('category')->where('category_id', $category)->get();
-        return DataTables::of($post)
-            ->addColumn('aksi', function($aksi) {
-                return '<div class="btn-group">
-                <button type="button" class="btn btn-warning" onclick="editData('.$aksi->id.', this)">
-                <i class="fa fa-pencil"></i></button>
-                <button type="button" class="btn btn-danger" onclick="deleteData('.$aksi->id.', this)">
-                <i class="fa fa-trash"></i></button>';
-            })
-            ->rawColumns(['aksi'])
-            ->make(true);
     }
 }

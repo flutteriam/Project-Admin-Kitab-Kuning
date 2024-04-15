@@ -124,8 +124,7 @@
                     [10, 25, 50, 100, 200, 300, 500, 1000, "All"]
                 ],
                 ajax: {
-                    url: "{{ route('kategori.datatable') }}",
-                    type: "POST"
+                    url: "{{ route('kategori.index') }}"
                 },
                 order: [0, 'asc'],
                 columns: [{

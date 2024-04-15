@@ -118,15 +118,15 @@ class WordController extends Controller
      */
     public function destroy($id)
     {
-        $kata = Word::find($id);
+        $word = Word::find($id);
         $nextWord = Word::where([
-            ['chapter_id', $kata->chapter_id],
-            ['order', '>', $kata->order]
+            ['chapter_id', $word->chapter_id],
+            ['order', '>', $word->order]
         ])->get();
-        foreach ($nextWord as $word) {
-            $word->update(['order' => $word->order - 1]);
+        foreach ($nextWord as $w) {
+            $w->update(['order' => $w->order - 1]);
         }
-        $kata->delete();
+        $word->delete();
         return response()->json([
             'status' => true,
             'message' => [

@@ -22,33 +22,21 @@ use App\Http\Controllers\Admin\WordTemplateController;
 */
 
 Route::prefix('datatable')->group(function () {
-    Route::post('bab', [BabController::class, 'datatable'])->name('api.bab_datatable');
     Route::post('chapter', [ChapterController::class, 'datatable'])->name('api.chapter_datatable');
     Route::post('kata', [WordController::class, 'datatable'])->name('api.kata_post_datatable');
-    Route::post('template', [WordTemplateController::class, 'datatable'])->name('api.word_template_datatable');
-    Route::get('template/{id?}', [WordTemplateController::class, 'show'])->name('api.template_show');
 });
 
 Route::get('/login', [AuthController::class, 'loginView']);
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-Route::group(['middleware' => ['isAuth', 'isRole:admin']], function () {
-    Route::resource('template', 'WordTemplateController')->except(['create', 'show']);
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-});
-
 Route::group(['middleware' => ['isAuth', 'isRole:admin|penginput']], function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
     Route::get('', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('kategori', CategoryController::class)->except(['create']);
-    Route::post('kategori/datatable', [CategoryController::class, 'datatable'])->name('kategori.datatable');
 
-    Route::get('kitab/{id?}', [BookController::class, 'index'])->name('book.index');
-    Route::resource('book', BookController::class)->except(['index', 'create', 'show']);
-    Route::get('kitab/{id}/show', [BookController::class, 'show'])->name('book.show');
-    Route::post('datatable/book', [BookController::class, 'datatable'])->name('api.book_datatable');
-
-    Route::get('detail/{id}', [BabController::class, 'ajax_post_detail'])->name('post.ajax.detail');
+    Route::resource('kitab', BookController::class)->except(['create']);
 
     Route::get('bab/{id?}', [BabController::class, 'index'])->name('bab.index');
     Route::get('bab/{bab}/show', [BabController::class, 'show'])->name('bab.show');

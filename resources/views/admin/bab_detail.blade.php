@@ -1,7 +1,7 @@
 @foreach ($babs as $bab)
+    <br>
+    <h4>Bab {{ $bab->order }}</h4>
     <div class="d-flex m-t-20">
-        <h4>Bab</h4>
-
         <div class="d-flex flex-column" style="width: 100%;">
             <div class="d-flex align-items-center justify-content-between">
                 <div class="alert alert-success dark m-l-10 m-r-10" role="alert">
@@ -16,18 +16,10 @@
                 </div>
             </div>
 
-            {{-- @forelse ($collection as $item)
-
-                @empty
-
-                @endforelse --}}
-
             @foreach ($bab->chapters as $k_chapter => $chapter)
                 <div class="d-flex align-items-center m-l-10 m-t-10">
                     <h5 style="display: inherit;">
-                        <div class="alert alert-warning dark m-r-5" role="alert"
-                            style="display: inline;padding: 0 6px;">{{ ++$k_chapter }}</div>
-                        Bait/Kalimat
+                        Bait/Kalimat {{ $chapter->order }}
                     </h5>
 
                     <div class="alert alert-light m-b-0 m-l-10" style="" role="alert" style="width: 100%;"
@@ -44,7 +36,7 @@
 
                     <div class="d-flex justify-content-between m-l-10">
                         <button type="button" class="btn btn-warning"
-                            onclick="editDataBait(`{{ $chapter->id }}`, this)"><i class="fa fa-pencil"></i></button>
+                            onclick="editDataBait(`{{ $chapter->id }}`, {{ $bab->chapters->count() }}, this)"><i class="fa fa-pencil"></i></button>
                         <button type="button" class="btn btn-danger m-l-5"
                             onclick="deleteDataBait(`{{ $chapter->id }}`, this)"><i class="fa fa-trash"></i></button>
                     </div>

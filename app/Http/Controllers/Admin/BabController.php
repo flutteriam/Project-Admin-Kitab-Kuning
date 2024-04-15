@@ -15,20 +15,50 @@ use App\Models\Word;
 
 class BabController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
-    public function index($id = null)
+
+    public function index($id = null, Request $request)
     {
+        if ($request->ajax()) {
+            if ($id == null) {
+
+                $book_id = $request->post;
+                $bab = Bab::where('book_id', $book_id)->with(['book', 'chapters.words' => function ($q) {
+                    $q->orderBy('order', 'ASC');
+                }])->get();
+
+                return DataTables::of($bab)
+                    ->addColumn('aksi', function ($aksi) {
+                        return '<div class="btn-group">
+                <button type="button" class="btn btn-warning" onclick="editData(' . $aksi->id . ', this)">
+                <i class="fa fa-pencil"></i></button>
+                <button type="button" class="btn btn-info" onclick="detailData(' . $aksi->id . ')">
+                <i class="fa fa-eye"></i></button>
+                <button type="button" class="btn btn-danger" onclick="deleteData(' . $aksi->id . ', this)">
+                <i class="fa fa-trash"></i></button>';
+                    })
+                    ->rawColumns(['aksi'])
+                    ->make(true);
+            } else {
+                $babs = Bab::where('book_id', $id)->with(['chapters.words' => function ($q) {
+                    $q->orderBy('order', 'ASC');
+                }])->orderBy('order', 'ASC')->get();
+                $count = $babs->count();
+
+                return response()->json([
+                    'count' => $count,
+                    'view' => view('admin.bab_detail', compact("babs"))->render(),
+                ], 200);
+            }
+        }
         $categories = Category::all();
         $selectedBook = null;
         $books = null;
+        $count = 0;
         if ($id) {
             $selectedBook = Book::with('category')->find($id);
             $books = Book::where('category_id', $selectedBook->category_id)->get();
         }
-        return view('admin.bab', compact("categories", "selectedBook", "books"));
+        return view('admin.bab', compact("categories", "selectedBook", "books", "count"));
     }
 
     /**
@@ -43,7 +73,7 @@ class BabController extends Controller
             'book_id' => $request->book_id,
             'order' => $order,
             'title' => $request->title,
-            'translate_title'=> $request->translate_title,
+            'translate_title' => $request->translate_title,
         ]);
         return response()->json([
             'status' => true,
@@ -89,9 +119,12 @@ class BabController extends Controller
     public function update(BabUpdateRequest $request, $id)
     {
         $bab = Bab::find($id);
+        $old = Bab::where('order', $request->order)->first();
+        Bab::where('id', $old->id)->update(['order' => $bab->order]);
         $bab->update([
             'title' => $request->title,
-            'translate_title'=> $request->translate_title,
+            'translate_title' => $request->translate_title,
+            'order' => $request->order,
         ]);
         return response()->json([
             'status' => true,
@@ -114,8 +147,8 @@ class BabController extends Controller
             ['book_id', $bab->book_id],
             ['order', '>', $bab->order]
         ])->get();
-        foreach ($nextBab as $bab) {
-            $bab->update(['order' => $bab->order - 1]);
+        foreach ($nextBab as $b) {
+            $b->update(['order' => $b->order - 1]);
         }
         $bab->delete();
         return response()->json([
@@ -125,36 +158,6 @@ class BabController extends Controller
                 'body' => 'Menghapus bab'
             ]
         ], 200);
-    }
-
-    public function ajax_post_detail($book_id)
-    {
-        $babs = Bab::where('book_id', $book_id)->with(['chapters.words' => function ($q) {
-            $q->orderBy('order', 'ASC');
-        }])->get();
-
-        return view('admin.ajax_bab_detail', compact("babs"));
-    }
-
-    public function datatable(Request $request)
-    {
-        $book_id = $request->post;
-        $bab = Bab::where('book_id', $book_id)->with(['book', 'chapters.words' => function ($q) {
-            $q->orderBy('order', 'ASC');
-        }])->get();
-
-        return DataTables::of($bab)
-            ->addColumn('aksi', function ($aksi) {
-                return '<div class="btn-group">
-                <button type="button" class="btn btn-warning" onclick="editData(' . $aksi->id . ', this)">
-                <i class="fa fa-pencil"></i></button>
-                <button type="button" class="btn btn-info" onclick="detailData(' . $aksi->id . ')">
-                <i class="fa fa-eye"></i></button>
-                <button type="button" class="btn btn-danger" onclick="deleteData(' . $aksi->id . ', this)">
-                <i class="fa fa-trash"></i></button>';
-            })
-            ->rawColumns(['aksi'])
-            ->make(true);
     }
 
     public function sort($id, Request $request)
