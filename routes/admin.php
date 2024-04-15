@@ -30,18 +30,16 @@ Route::prefix('datatable')->group(function () {
     Route::get('template/{id?}', [WordTemplateController::class, 'show'])->name('api.template_show');
 });
 
-
 Route::get('/login', [AuthController::class, 'loginView']);
-Route::post('/login', [AuthController::class, 'login'])->name('admin.login');
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 Route::group(['middleware' => ['isAuth', 'isRole:admin']], function () {
     Route::resource('template', 'WordTemplateController')->except(['create', 'show']);
-    Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
 Route::group(['middleware' => ['isAuth', 'isRole:admin|penginput']], function () {
-    Route::get('', [DashboardController::class, 'index'])->name('admin');
-    Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('category', CategoryController::class)->except(['create']);
     Route::post('datatable/category', [CategoryController::class, 'datatable'])->name('api.category_datatable');

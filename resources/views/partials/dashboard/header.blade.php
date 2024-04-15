@@ -28,11 +28,11 @@
                     </div>
                     <ul class="profile-dropdown onhover-show-div p-20">
                         <li>
-                            <a href="{{ route('admin.logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 <i class="icon-power-off"></i>
                                 Logout
                             </a>
-                            <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                 @csrf
                             </form>
                         </li>

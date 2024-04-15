@@ -6,8 +6,8 @@
         <h6 class="mt-3 f-12">{{ Auth::user()->name }}</h6>
     </div>
     <ul class="sidebar-menu">
-        <li class="{{ request()->segment(1) == 'dashboard' ? 'active' : '' }}">
-            <a href="{{ route('admin.dashboard') }}" class="sidebar-header">
+        <li class="{{ request()->segment(1) == '' ? 'active' : '' }}">
+            <a href="{{ route('dashboard') }}" class="sidebar-header">
                 <i class="icon-desktop"></i><span>Dashboard</span>
             </a>
         </li>
@@ -34,13 +34,12 @@
     </ul>
     <div class="sidebar-widget text-center">
         <div class="sidebar-widget-top">
-            <h6 class="mb-2 fs-14">Need Help</h6>
+            <h6 class="mb-2 fs-14">Butuh Bantuan?</h6>
             <i class="icon-bell"></i>
         </div>
         <div class="sidebar-widget-bottom p-20 m-20">
-            <p>+1 234 567 899
-                <br>help@pixelstrap.com
-                <br><a href="#">Visit FAQ</a>
+            <p>+62 852-3488-3488
+                <br>Abdurrachman
             </p>
         </div>
     </div>

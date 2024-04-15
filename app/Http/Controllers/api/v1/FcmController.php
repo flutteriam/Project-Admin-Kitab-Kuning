@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\api\v1;
 
 use App\Models\Fcm;
@@ -8,7 +9,8 @@ use Illuminate\Support\Facades\Validator;
 
 class FcmController extends Controller
 {
-    public function saveToken(Request $request){
+    public function saveToken(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'device_id' => 'required',
             'fcm_token' => 'required',
@@ -18,7 +20,7 @@ class FcmController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
@@ -26,21 +28,22 @@ class FcmController extends Controller
         $data = Fcm::create($request->all());
         if (is_null($data)) {
             $response = [
-            'data'=>$data,
-            'message' => 'error',
-            'status' => 500,
-        ];
-        return response()->json($response, 200);
+                'data' => $data,
+                'message' => 'error',
+                'status' => 500,
+            ];
+            return response()->json($response, 200);
         }
-        $response = [
-            'data'=>$data,
+        $response =  [
+            'data' => $data,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function getById(Request $request){
+    public function getById(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'id' => 'required',
         ]);
@@ -48,7 +51,7 @@ class FcmController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
@@ -65,14 +68,15 @@ class FcmController extends Controller
         }
 
         $response = [
-            'data'=>$data,
+            'data' => $data,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function update(Request $request){
+    public function update(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'id' => 'required',
         ]);
@@ -80,7 +84,7 @@ class FcmController extends Controller
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
@@ -95,22 +99,23 @@ class FcmController extends Controller
             return response()->json($response, 404);
         }
         $response = [
-            'data'=>$data,
+            'data' => $data,
             'success' => true,
             'status' => 200,
         ];
         return response()->json($response, 200);
     }
 
-    public function delete(Request $request){
-     $validator = Validator::make($request->all(), [
+    public function delete(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
             'id' => 'required',
         ]);
         if ($validator->fails()) {
             $response = [
                 'success' => false,
                 'message' => 'Validation Error.', $validator->errors(),
-                'status'=> 500
+                'status' => 500
             ];
             return response()->json($response, 404);
         }
@@ -118,7 +123,7 @@ class FcmController extends Controller
         if ($data) {
             $data->delete();
             $response = [
-                'data'=>$data,
+                'data' => $data,
                 'success' => true,
                 'status' => 200,
             ];
@@ -132,7 +137,8 @@ class FcmController extends Controller
         return response()->json($response, 404);
     }
 
-    public function getAll(){
+    public function getAll()
+    {
         $data = Fcm::all();
         if (is_null($data)) {
             $response = [
@@ -144,7 +150,7 @@ class FcmController extends Controller
         }
 
         $response = [
-            'data'=>$data,
+            'data' => $data,
             'success' => true,
             'status' => 200,
         ];

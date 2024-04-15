@@ -20,13 +20,13 @@ class CheckIsRole
         // Check if the user is authenticated
         if (!Auth::check()) {
             // User is not authenticated, redirect them to the login page
-            return redirect()->route('admin.login');
+            return redirect()->route('login');
         }
         $role_can_access = explode('|', $role);
         // Check if the user has the required role
         if (!$request->user()->hasRole($role_can_access)) {
             // User does not have the required role, redirect them to a route or show an error
-            return redirect()->route('admin.dashboard')->with('error', 'You do not have permission to access this page.');
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to access this page.');
         }
 
         return $next($request);

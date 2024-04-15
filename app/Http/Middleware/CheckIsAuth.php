@@ -18,8 +18,7 @@ class CheckIsAuth
     public function handle(Request $request, Closure $next)
     {
         if (!Auth::check()) {
-            // User is not authenticated, redirect them to the login page
-            return redirect()->route('admin.login');
+            return redirect()->route('login');
         }
 
         return $next($request);

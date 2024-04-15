@@ -98,7 +98,7 @@
                 e.preventDefault()
                 loading('show')
                 new Promise((resolve, reject) => {
-                    $axios.post(`{{ route('admin.login') }}`, $('#formLogin').serialize())
+                    $axios.post(`{{ route('login') }}`, $('#formLogin').serialize())
                         .then(({data}) => {
                             $swal.fire({
                                 icon: 'success',

@@ -7,8 +7,6 @@ use App\Models\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
@@ -33,7 +31,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             return response()->json([
                 'status' => true,
-                'redirect' => route('admin')
+                'redirect' => route('dashboard')
             ], 200);
         }
 
@@ -57,6 +55,6 @@ class AuthController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect()->route('admin.login');
+        return redirect()->route('login');
     }
 }

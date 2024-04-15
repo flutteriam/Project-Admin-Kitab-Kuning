@@ -90,13 +90,13 @@
                                         $path = explode('/', request()->path());
                                     @endphp
                                     @forelse ($path as $key => $value)
-                                        @if (is_numeric($value) || strpos($value, '='))
+                                        @if (is_numeric($value) || strpos($value, '=') || empty($value))
                                             @php
                                                 continue;
                                             @endphp
                                         @endif
                                         @if ($key == 0)
-                                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i
+                                            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i
                                                         class="fa fa-home"></i></a></li>
                                             <li class="breadcrumb-item active">{{ ucfirst($value) }}</li>
                                         @else
