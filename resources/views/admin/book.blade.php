@@ -30,7 +30,6 @@
                                 <tr>
                                     <th>No</th>
                                     <th>Gambar</th>
-                                    <th>Kategori</th>
                                     <th>Judul</th>
                                     <th>Terjemahan Judul</th>
                                     <th>Aksi</th>
@@ -172,9 +171,6 @@
                             <a href="${url}" class="btn btn-primary btn-sm"><i class="fa fa-chevron-right"></i></a>`
                             return html;
                         }
-                    },
-                    {
-                        data: "category.name"
                     },
                     {
                         data: "title"

@@ -12,7 +12,7 @@
             </a>
         </li>
         @if (Auth::user()->type == 0 || Auth::user()->type == 1)
-            <li class="{{ request()->segment(2) == 'category' ? 'active' : '' }}">
+            <li class="{{ request()->segment(2) == 'kaategori' ? 'active' : '' }}">
                 <a href="{{ route('kategori.index') }}" class="sidebar-header">
                     <i class="icon-list"></i><span>Kategori</span>
                 </a>
