@@ -40,8 +40,8 @@ Route::group(['middleware' => ['isAuth', 'isRole:admin']], function () {
 Route::group(['middleware' => ['isAuth', 'isRole:admin|penginput']], function () {
     Route::get('', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::resource('category', CategoryController::class)->except(['create']);
-    Route::post('datatable/category', [CategoryController::class, 'datatable'])->name('api.category_datatable');
+    Route::resource('kategori', CategoryController::class)->except(['create']);
+    Route::post('kategori/datatable', [CategoryController::class, 'datatable'])->name('kategori.datatable');
 
     Route::get('kitab/{id?}', [BookController::class, 'index'])->name('book.index');
     Route::resource('book', BookController::class)->except(['index', 'create', 'show']);

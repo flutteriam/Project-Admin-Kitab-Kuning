@@ -5,12 +5,16 @@
         <div class="col-sm-12">
             <div class="card">
                 <div class="card-header">
-                    <h5>Kategori</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Kategori</h5>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <button class="btn btn-primary" id="tambah-data"><i class="fa fa-plus"></i> Tambah</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <div class="float-right mb-3">
-                        <button class="btn btn-primary" id="tambah-data"><i class="fa fa-plus"></i> Tambah</button>
-                    </div>
                     <div class="table-responsive">
                         <table id="table-data" class="display datatables">
                             <thead>
@@ -120,7 +124,7 @@
                     [10, 25, 50, 100, 200, 300, 500, 1000, "All"]
                 ],
                 ajax: {
-                    url: "{{ route('api.category_datatable') }}",
+                    url: "{{ route('kategori.datatable') }}",
                     type: "POST"
                 },
                 order: [0, 'asc'],
@@ -175,7 +179,7 @@
                 if (type == "POST") {
                     new Promise((resolve, reject) => {
                         var formData = new FormData($('#form-data')[0]);
-                        $axios.post(`{{ route('category.store') }}`, formData)
+                        $axios.post(`{{ route('kategori.store') }}`, formData)
                             .then(({
                                 data
                             }) => {
@@ -199,7 +203,7 @@
                 } else if (type == 'PUT') {
                     new Promise((resolve, reject) => {
                         var formData = new FormData($('#form-data')[0]);
-                        let url = `{{ route('category.update', ['category' => ':id']) }}`
+                        let url = `{{ route('kategori.update', ['kategori' => ':id']) }}`
                         url = url.replace(':id', $("#fieldId").val())
                         $axios.post(`${url}?_method=PUT`, formData)
                             .then(({
@@ -226,7 +230,7 @@
         const editData = (id, el) => {
             loading('show', el)
             new Promise((resolve, reject) => {
-                let url = `{{ route('category.edit', ['category' => ':id']) }}`
+                let url = `{{ route('kategori.edit', ['kategori' => ':id']) }}`
                 url = url.replace(':id', id)
                 $axios.get(`${url}`)
                     .then(({
@@ -266,7 +270,7 @@
                     if (res.isConfirmed) {
                         loading('show', el)
                         new Promise((resolve, reject) => {
-                            let url = `{{ route('category.destroy', ['category' => ':id']) }}`
+                            let url = `{{ route('kategori.destroy', ['kategori' => ':id']) }}`
                             url = url.replace(':id', id)
                             $axios.delete(`${url}`)
                                 .then(({
