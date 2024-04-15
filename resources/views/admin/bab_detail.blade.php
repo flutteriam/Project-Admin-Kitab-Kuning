@@ -16,7 +16,7 @@
                 </div>
             </div>
 
-            @foreach ($bab->chapters as $k_chapter => $chapter)
+            @foreach ($bab->chapters as $chapter)
                 <div class="d-flex align-items-center m-l-10 m-t-10">
                     <h5 style="display: inherit;">
                         Bait/Kalimat {{ $chapter->order }}

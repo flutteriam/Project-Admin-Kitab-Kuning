@@ -560,15 +560,6 @@
                         let chapter = data.data.chapter
                         let category = data.data.category
                         let bab = data.data.bab
-                        $("#fieldCategory").val(category)
-                        $("#fieldKitab").val(chapter.book_id)
-                        $("#fieldBab").val(chapter.bab_id)
-                        $("#fieldIdBait").val(chapter.id)
-                        $("#fieldOrderBait").val(chapter.order)
-                        $('#orderFormBait').css('display', 'block')
-
-                        $("#modal-data-chapter").modal('show')
-
 
                         $('#fieldOrderBait').empty();
 
@@ -578,6 +569,15 @@
                                 text: i
                             }));
                         }
+
+                        $("#fieldCategory").val(category)
+                        $("#fieldKitab").val(chapter.book_id)
+                        $("#fieldBab").val(chapter.bab_id)
+                        $("#fieldIdBait").val(chapter.id)
+                        $("#fieldOrderBait").val(chapter.order)
+                        $('#orderFormBait').css('display', 'block')
+
+                        $("#modal-data-chapter").modal('show')
 
                         CKEDITOR.instances['fieldTitleBait'].setData(chapter.translate)
                         CKEDITOR.instances['fieldDescription'].setData(chapter.description)
@@ -800,7 +800,7 @@
                         CKEDITOR.instances['fieldBasicWrod'].setData(word.basic)
 
                         typeWord = 'PUT'
-                        $("#modal-data-label-word").html("Update Bait")
+                        $("#modal-data-label-word").html("Update Kata")
                         $("#btn-submit-word").html("Update")
                         loading('hide', el)
                     })

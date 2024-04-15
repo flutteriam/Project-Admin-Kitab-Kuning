@@ -22,9 +22,18 @@ class BabController extends Controller
             if ($id == null) {
 
                 $book_id = $request->post;
-                $bab = Bab::where('book_id', $book_id)->with(['book', 'chapters.words' => function ($q) {
-                    $q->orderBy('order', 'ASC');
-                }])->get();
+                $bab = Bab::where('book_id', $book_id)
+                    ->with([
+                        'book',
+                        'chapters' => function ($q) {
+                            $q->orderBy('order', 'ASC');
+                        },
+                        'chapters.words' => function ($q) {
+                            $q->orderBy('order', 'ASC');
+                        }
+                    ])
+                    ->orderBy('order', 'ASC')
+                    ->get();
 
                 return DataTables::of($bab)
                     ->addColumn('aksi', function ($aksi) {
@@ -39,9 +48,17 @@ class BabController extends Controller
                     ->rawColumns(['aksi'])
                     ->make(true);
             } else {
-                $babs = Bab::where('book_id', $id)->with(['chapters.words' => function ($q) {
-                    $q->orderBy('order', 'ASC');
-                }])->orderBy('order', 'ASC')->get();
+                $babs = Bab::where('book_id', $id)->with(
+                    [
+                        'book',
+                        'chapters' => function ($q) {
+                            $q->orderBy('order', 'ASC');
+                        },
+                        'chapters.words' => function ($q) {
+                            $q->orderBy('order', 'ASC');
+                        },
+                    ]
+                )->orderBy('order', 'ASC')->get();
                 $count = $babs->count();
 
                 return response()->json([
@@ -119,8 +136,15 @@ class BabController extends Controller
     public function update(BabUpdateRequest $request, $id)
     {
         $bab = Bab::find($id);
-        $old = Bab::where('order', $request->order)->first();
-        Bab::where('id', $old->id)->update(['order' => $bab->order]);
+        try {
+            $old = Bab::where([
+                'order' => $request->order,
+                'book_id' => $bab->book_id
+            ])->first();
+            $old->update(['order' => $bab->order]);
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
         $bab->update([
             'title' => $request->title,
             'translate_title' => $request->translate_title,

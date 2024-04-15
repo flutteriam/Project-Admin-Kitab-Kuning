@@ -21,11 +21,6 @@ use App\Http\Controllers\Admin\WordTemplateController;
 |
 */
 
-Route::prefix('datatable')->group(function () {
-    Route::post('chapter', [ChapterController::class, 'datatable'])->name('api.chapter_datatable');
-    Route::post('kata', [WordController::class, 'datatable'])->name('api.kata_post_datatable');
-});
-
 Route::get('/login', [AuthController::class, 'loginView']);
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 

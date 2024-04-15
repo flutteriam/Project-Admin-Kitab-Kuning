@@ -11,31 +11,47 @@ use App\Models\Chapter;
 use App\Models\Word;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Contracts\Support\Renderable;
+use Yajra\DataTables\Facades\DataTables;
 
 class WordController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
-    public function index($id = null)
+    public function index($id = null, Request $request)
     {
-        $categories = Category::all();
-        $bab = null;
-        $temp_book = null;
-        $book = null;
-        $first_chapter = null;
-        $active_category = null;
-        if ($id) {
-            $bab = Bab::with('book')->find($id);
-            $temp_book = Book::find($bab->book_id);
-            $book = Book::where('category_id', $temp_book->category_id)->get();
-            $active_category = Category::find($book->first()->category_id);
-            $first_chapter = Chapter::where('bab_id', $bab->id)->orderBy('order', 'ASC')->first()->id;
+        if ($request->ajax()) {
+            $bab_id = $request->bab;
+            $chapter_id = $request->chapter;
+            $kata = Word::with('chapter')
+                ->where('bab_id', $bab_id)
+                ->where('chapter_id', $chapter_id)
+                ->orderBy('order', 'ASC')->get();
+            return DataTables::of($kata)
+                ->addColumn('aksi', function ($aksi) {
+                    return '<div class="btn-group">
+                            <button type="button" class="btn btn-warning" onclick="editData(' . $aksi->id . ', this)"> <i class="fa fa-pencil"></i></button>
+                            <button type="button" class="btn btn-info" onclick="setDir(' . $aksi->id . ', 1, this)"> <i class="fa fa-arrow-up"></i></button>
+                            <button type="button" class="btn btn-info" onclick="setDir(' . $aksi->id . ', 2, this)"> <i class="fa fa-arrow-down"></i></button>
+                            <button type="button" class="btn btn-danger" onclick="deleteData(' . $aksi->id . ', this)"> <i class="fa fa-trash"></i></button>
+                        </div>';
+                })
+                ->rawColumns(['aksi'])
+                ->make(true);
+        } else {
+            $categories = Category::all();
+            $bab = null;
+            $temp_book = null;
+            $book = null;
+            $first_chapter = null;
+            $active_category = null;
+            if ($id) {
+                $bab = Bab::with('book')->find($id);
+                $temp_book = Book::find($bab->book_id);
+                $book = Book::where('category_id', $temp_book->category_id)->get();
+                $active_category = Category::find($book->first()->category_id);
+                $first_chapter = Chapter::where('bab_id', $bab->id)->orderBy('order', 'ASC')->first()->id;
+            }
+            return view('book::chapter', compact('categories', 'bab', 'temp_book', 'book', 'active_category', 'first_chapter'));
         }
-        return view('book::chapter', compact('categories', 'bab', 'temp_book', 'book', 'active_category', 'first_chapter'));
     }
 
     /**
@@ -190,27 +206,6 @@ class WordController extends Controller
         Word::create($row);
 
         return $this->response_message('Sukses', 'Duplikat Kata', 200);
-    }
-
-    public function datatable(Request $request)
-    {
-        $bab_id = $request->bab;
-        $chapter_id = $request->chapter;
-        $kata = Word::with('chapter')
-            ->where('bab_id', $bab_id)
-            ->where('chapter_id', $chapter_id)
-            ->orderBy('order', 'ASC')->get();
-        return DataTables::of($kata)
-            ->addColumn('aksi', function ($aksi) {
-                return '<div class="btn-group">
-                            <button type="button" class="btn btn-warning" onclick="editData(' . $aksi->id . ', this)"> <i class="fa fa-pencil"></i></button>
-                            <button type="button" class="btn btn-info" onclick="setDir(' . $aksi->id . ', 1, this)"> <i class="fa fa-arrow-up"></i></button>
-                            <button type="button" class="btn btn-info" onclick="setDir(' . $aksi->id . ', 2, this)"> <i class="fa fa-arrow-down"></i></button>
-                            <button type="button" class="btn btn-danger" onclick="deleteData(' . $aksi->id . ', this)"> <i class="fa fa-trash"></i></button>
-                        </div>';
-            })
-            ->rawColumns(['aksi'])
-            ->make(true);
     }
 
     private function response_message($head, $body, $code = 500)

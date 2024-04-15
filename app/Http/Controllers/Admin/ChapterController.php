@@ -26,7 +26,7 @@ class ChapterController extends Controller
         $temp_book = null;
         $book = null;
         $active_category = null;
-        if($id) {
+        if ($id) {
             $bab = Bab::with('book')->find($id);
             $temp_book = Book::find($bab->book_id);
             $book = Book::where('category_id', $temp_book->category_id)->get();
@@ -44,11 +44,11 @@ class ChapterController extends Controller
     {
         $order = Chapter::where('bab_id', $request->bab_id)->count() + 1;
         Chapter::create([
-            'order'=> $order,
-            'bab_id'=> $request->bab_id,
-            'book_id'=> $request->book_id,
-            'translate'=> $request->translate,
-            'description'=> $request->description,
+            'order' => $order,
+            'bab_id' => $request->bab_id,
+            'book_id' => $request->book_id,
+            'translate' => $request->translate,
+            'description' => $request->description,
         ]);
         return response()->json([
             'status' => true,
@@ -99,9 +99,19 @@ class ChapterController extends Controller
     public function update(ChapterUpdateRequest $request, $id)
     {
         $chapter = Chapter::find($id);
+        try {
+            $old = Chapter::where([
+                'order' => $request->order,
+                'bab_id' => $chapter->bab_id,
+            ])->first();
+            $old->update(['order' => $chapter->order]);
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
         $chapter->update([
-            'translate'=> $request->translate,
-            'description'=> $request->description,
+            'order' => $request->order,
+            'translate' => $request->translate,
+            'description' => $request->description,
         ]);
         return response()->json([
             'status' => true,
@@ -124,8 +134,8 @@ class ChapterController extends Controller
             ['bab_id', $chapter->bab_id],
             ['order', '>', $chapter->order]
         ])->get();
-        foreach ($nextChapter as $chapter) {
-            $chapter->update(['order' => $chapter->order - 1]);
+        foreach ($nextChapter as $chap) {
+            $chap->update(['order' => $chap->order - 1]);
         }
         $chapter->delete();
         return response()->json([
@@ -135,23 +145,5 @@ class ChapterController extends Controller
                 'body' => 'Menghapus Chapter'
             ]
         ], 200);
-    }
-
-    public function datatable(Request $request) {
-        $bab_id = $request->bab;
-        $book_id = $request->book;
-        $bab = Chapter::where('bab_id', $bab_id)->where('book_id', $book_id)->with(['book', 'bab', 'words'])->orderBy('order', 'ASC')->get();
-        return DataTables::of($bab)
-            ->addColumn('aksi', function($aksi) use($bab_id) {
-                return '<div class="btn-group">
-                <button type="button" class="btn btn-warning" onclick="editData('.$aksi->id.', this)">
-                <i class="fa fa-pencil"></i></button>
-                <button type="button" class="btn btn-info" onclick="detailData('.$bab_id.')">
-                <i class="fa fa-eye"></i></button>
-                <button type="button" class="btn btn-danger" onclick="deleteData('.$aksi->id.', this)">
-                <i class="fa fa-trash"></i></button>';
-            })
-            ->rawColumns(['aksi'])
-            ->make(true);
     }
 }
