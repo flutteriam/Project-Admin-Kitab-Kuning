@@ -2,16 +2,14 @@
 
 namespace App\Models;
 
-use Filament\Panel;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
-use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Notifications\MailResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable implements JWTSubject, MustVerifyEmail, FilamentUser
+class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 {
     use HasFactory, Notifiable;
 
@@ -79,10 +77,6 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail, Filam
         $this->notify(new MailResetPasswordNotification($token));
     }
 
-    public function canAccessPanel(Panel $panel): bool
-    {
-        return $this->type == 0;
-    }
 
     public function hasRole($roles)
     {
