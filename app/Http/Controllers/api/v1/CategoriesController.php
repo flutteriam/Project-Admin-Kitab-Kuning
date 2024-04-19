@@ -167,7 +167,7 @@ class CategoriesController extends Controller
 
     public function getAll()
     {
-        $data = Category::all();
+        $data = Category::orderBy('order', 'asc')->get();
         if (is_null($data)) {
             $response = [
                 'success' => false,
