@@ -63,7 +63,8 @@ class WordController extends Controller
     {
         $order = Word::where('chapter_id', $request->chapter_id)->count() + 1;
         $request->merge([
-            'order' => $order
+            'order' => $order,
+            'basic' => '',
         ]);
         Word::create($request->except(['_token', 'category_id']));
         return response()->json([
@@ -116,7 +117,7 @@ class WordController extends Controller
             'arab' => $request->arab,
             'arab_harokat' => $request->arab_harokat,
             'translate' => $request->translate,
-            'basic' => $request->basic,
+            'basic' => '',
         ]);
         return response()->json([
             'status' => true,

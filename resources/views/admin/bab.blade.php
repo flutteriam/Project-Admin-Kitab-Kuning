@@ -210,10 +210,6 @@
                             <label for="">Terjemahan Kata</label>
                             <textarea name="translate" id="fieldTranslate" cols="30" rows="5" class="form-control" required></textarea>
                         </div>
-                        <div class="form-group" style="display: none;">
-                            <label for="">Kata Dasar</label>
-                            <textarea name="basic" id="fieldBasicWrod" cols="30" rows="5" class="form-control" required></textarea>
-                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
@@ -685,7 +681,6 @@
             $("#fieldArab").val('')
             $("#fieldArabHarokat").val('')
             $('#fieldTranslate').val('')
-            $('#fieldBasicWrod').val('')
 
             $("#btn-del-word").hide()
 
@@ -765,7 +760,6 @@
                         $("#fieldArab").val(word.arab)
                         $("#fieldArabHarokat").val(word.arab_harokat)
                         $('#fieldTranslate').val(word.translate)
-                        $('#fieldBasicWrod').val(word.basic)
 
                         typeWord = 'PUT'
                         $("#modal-data-label-word").html("Update Kata")
