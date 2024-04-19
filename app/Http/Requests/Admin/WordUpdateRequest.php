@@ -20,7 +20,6 @@ class WordUpdateRequest extends FormRequest
             'arab' => 'required',
             'arab_harokat' => 'required',
             'translate' => 'required',
-            'basic' => 'required',
         ];
     }
 
