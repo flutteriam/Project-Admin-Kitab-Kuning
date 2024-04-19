@@ -241,8 +241,6 @@
         $(document).ready(() => {
             get_bab_by_kitab($("#kitab").val(), 'container-detail')
 
-            CKEDITOR.replace('translate_title')
-
             $("#tambah-data").on('click', () => {
                 let kitab = $("#kitab").val()
                 let category = $('#category').val()
@@ -252,10 +250,8 @@
                 $('#orderForm').css('display', 'none')
                 $("#modal-data-label").html("Tambah Bab")
                 $("#btn-submit").html("Simpan")
-                // $("#form-data")[0].reset()
-                CKEDITOR.instances['fieldTransTitle'].setData('')
+                $('#fieldTransTitle').val('')
                 $("#fieldTitle").val('')
-                $("#fieldTransTitle").val('')
                 $("#fieldKitab").html(`<option selected disabled>== Pilih Kitab ==</option>`)
                 type = 'POST'
                 $("#modal-data").modal('show')
@@ -277,7 +273,6 @@
                 loading('show', $(".modal-content"))
                 e.preventDefault()
                 let FD = new FormData($("#form-data")[0])
-                FD.set('translate_title', CKEDITOR.instances['fieldTransTitle'].getData())
                 if (type == "POST") {
                     new Promise((resolve, reject) => {
                         $axios.post(`{{ route('bab.store') }}`, FD)
@@ -399,7 +394,7 @@
                         $("#fieldTitle").val(bab.title)
                         $("#fieldOrder").val(bab.order)
                         $('#orderForm').css('display', 'block')
-                        CKEDITOR.instances['fieldTransTitle'].setData(bab.translate_title)
+                        $('#fieldTransTitle').val(bab.translate_title)
                         type = 'PUT'
                         loading('hide', el)
                         $("#modal-data-label").html("Update Bab")
@@ -456,19 +451,11 @@
     <script>
         let typeBait
         $(document).ready(() => {
-
-            translate2 = document.getElementById('fieldTitleBait')
-            description2 = document.getElementById('fieldDescription')
-            CKEDITOR.replace(translate2)
-            CKEDITOR.replace(description2)
-
             $("#form-data-chapter").on('submit', e => {
                 loading('show', $(".modal-content"))
                 e.preventDefault()
                 if (typeBait == "POST") {
                     let FD = new FormData($("#form-data-chapter")[0])
-                    FD.set('translate', CKEDITOR.instances['fieldTitleBait'].getData())
-                    FD.set('description', CKEDITOR.instances['fieldDescription'].getData())
                     new Promise((resolve, reject) => {
                         $axios.post(`{{ route('chapter.store') }}`, FD)
                             .then(({
@@ -476,12 +463,7 @@
                             }) => {
                                 $('#modal-data-chapter').modal('hide')
                                 loading('hide', $(".modal-content"))
-
-                                // table.ajax.reload()
                                 $("#kitab").trigger('change')
-
-                                CKEDITOR.instances['fieldTitleBait'].setData('')
-                                CKEDITOR.instances['fieldDescription'].setData('')
                                 $swal.fire({
                                     icon: 'success',
                                     title: data.message.head,
@@ -495,8 +477,6 @@
                     })
                 } else if (typeBait == 'PUT') {
                     let FD = new FormData($("#form-data-chapter")[0])
-                    FD.set('translate', CKEDITOR.instances['fieldTitleBait'].getData())
-                    FD.set('description', CKEDITOR.instances['fieldDescription'].getData())
                     FD.set('_method', 'PUT')
                     new Promise((resolve, reject) => {
                         let url = `{{ route('chapter.update', ['chapter' => ':id']) }}`
@@ -532,8 +512,8 @@
             $("#modal-data-label-chapter").html("Tambah Bait")
             $("#btn-submit-chapter").html("Simpan")
             $("#form-data-chapter")[0].reset()
-            CKEDITOR.instances['fieldTitleBait'].setData('')
-            CKEDITOR.instances['fieldDescription'].setData('')
+            $('#fieldTitleBait').val('')
+            $('#fieldDescription').val('')
 
             $("#fieldIdBait").val('')
 
@@ -579,8 +559,8 @@
 
                         $("#modal-data-chapter").modal('show')
 
-                        CKEDITOR.instances['fieldTitleBait'].setData(chapter.translate)
-                        CKEDITOR.instances['fieldDescription'].setData(chapter.description)
+                        $('#fieldTitleBait').val(chapter.translate)
+                        $('#fieldDescription').val(chapter.description)
                         typeBait = 'PUT'
                         $("#modal-data-label-chapter").html("Update Bait")
                         $("#btn-submit-chapter").html("Update")
@@ -636,13 +616,6 @@
         let typeWord
         $(document).ready(() => {
             $(".select2").select2()
-
-            translate2 = document.getElementById('fieldTranslate')
-            word2 = document.getElementById('fieldBasicWrod')
-            CKEDITOR.replace(translate2)
-            CKEDITOR.replace(word2)
-
-
             $("#form-data-word").on('submit', e => {
                 loading('show', $(".modal-content"))
                 e.preventDefault()
@@ -650,9 +623,6 @@
                     new Promise((resolve, reject) => {
 
                         let FD = new FormData($("#form-data-word")[0])
-                        FD.set('translate', CKEDITOR.instances['fieldTranslate'].getData())
-                        FD.set('basic', CKEDITOR.instances['fieldBasicWrod'].getData())
-
                         $axios.post(`{{ route('word.store') }}`, FD)
                             .then(({
                                 data
@@ -678,8 +648,6 @@
                         let url = `{{ route('word.update', ['word' => ':id']) }}`
                         url = url.replace(':id', $("#fieldIdWord").val())
                         let FD = new FormData($("#form-data-word")[0])
-                        FD.set('translate', CKEDITOR.instances['fieldTranslate'].getData())
-                        FD.set('basic', CKEDITOR.instances['fieldBasicWrod'].getData())
                         FD.append('_method', "PUT")
                         $axios.post(`${url}`, FD)
                             .then(({
@@ -716,8 +684,8 @@
 
             $("#fieldArab").val('')
             $("#fieldArabHarokat").val('')
-            CKEDITOR.instances['fieldTranslate'].setData('')
-            CKEDITOR.instances['fieldBasicWrod'].setData('text')
+            $('#fieldTranslate').val('')
+            $('#fieldBasicWrod').val('')
 
             $("#btn-del-word").hide()
 
@@ -796,8 +764,8 @@
 
                         $("#fieldArab").val(word.arab)
                         $("#fieldArabHarokat").val(word.arab_harokat)
-                        CKEDITOR.instances['fieldTranslate'].setData(word.translate)
-                        CKEDITOR.instances['fieldBasicWrod'].setData(word.basic)
+                        $('#fieldTranslate').val(word.translate)
+                        $('#fieldBasicWrod').val(word.basic)
 
                         typeWord = 'PUT'
                         $("#modal-data-label-word").html("Update Kata")
