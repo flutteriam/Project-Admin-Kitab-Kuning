@@ -417,7 +417,7 @@ class BookController extends Controller
             ];
             return response()->json($response, 404);
         }
-        $data = Book::with(['category','babs','babs.chapters','babs.chapters.words'])
+        $data = Book::with(['category', 'babs', 'babs.chapters', 'babs.chapters.words'])
             ->whereSlugs($request->slug)
             ->first();
 
@@ -442,7 +442,18 @@ class BookController extends Controller
             ];
             return response()->json($response, 404);
         }
-        $data = Book::with(['category','babs','babs.chapters','babs.chapters.words'])
+        $data = Book::with([
+            'category',
+            'babs' => function ($q) {
+                $q->orderBy('order', 'ASC');
+            },
+            'babs.chapters' => function ($q) {
+                $q->orderBy('order', 'ASC');
+            },
+            'babs.chapters.words' => function ($q) {
+                $q->orderBy('order', 'ASC');
+            },
+        ])
             ->whereId($request->id)
             ->first();
         if ($request->uid) {
