@@ -489,10 +489,51 @@ class BookController extends Controller
             $str = $request->param;
         }
 
-        $books = Book::select('id', 'title', 'cover', 'slugs')->where('status', 1)->where('title', 'like', '%' . $str . '%')->orderBy('id', 'asc')->limit(5)->get();
+        $matchThese = ['books.status' => 1, 'title', 'like', '%' . $str . '%'];
+        $data = DB::table('books')
+            ->select(
+                'books.id as id',
+                'books.category_id as category_id',
+                'books.comments as comments',
+                'books.content as content',
+                'books.cover as cover',
+                'books.created_at',
+                'books.likes as likes',
+                'books.description as description',
+                'books.slugs as slugs',
+                'books.status as status',
+                'books.title as title',
+                'books.type as type',
+                'categories.name as cate_name'
+            )
+            ->join('categories', 'books.category_id', '=', 'categories.id')
+            ->where($matchThese)
+            ->orderBy('books.id', 'desc')
+            ->limit($request->limit)
+            ->get();
+        foreach ($data as $loop) {
+            if ($request->uid) {
+                $temp = BookLike::where(['uid' => $request->uid, 'book_id' => $loop->id])->first();
+                $tempSaved = SavedBook::where(['uid' => $request->uid, 'book_id' => $loop->id])->first();
+                if (isset($temp) && $temp->id) {
+                    $loop->haveLiked = true;
+                } else {
+                    $loop->haveLiked = false;
+                }
+
+                if (isset($tempSaved) && $tempSaved->id) {
+                    $loop->haveSaved = true;
+                } else {
+                    $loop->haveSaved = false;
+                }
+            } else {
+                $loop->haveLiked = false;
+                $loop->haveSaved = false;
+            }
+        }
 
         $response = [
-            'books' => $books,
+            'books' => $data,
             'success' => true,
             'status' => 200,
         ];
