@@ -489,7 +489,7 @@ class BookController extends Controller
             $str = $request->param;
         }
 
-        $matchThese = ['books.status' => 1, 'title', 'like', '%' . $str . '%'];
+        $matchThese = ['books.status' => 1, ['books.title', 'like', '%' . $str . '%']];
         $data = DB::table('books')
             ->select(
                 'books.id as id',
