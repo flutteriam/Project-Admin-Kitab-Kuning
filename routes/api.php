@@ -11,6 +11,7 @@ use App\Http\Controllers\api\v1\WordController;
 use App\Http\Controllers\api\v1\UsersController;
 use App\Http\Controllers\api\v1\ChapterController;
 use App\Http\Controllers\api\v1\CommentsController;
+use App\Http\Controllers\api\v1\SavedBabController;
 use App\Http\Controllers\api\v1\Auth\AuthController;
 use App\Http\Controllers\api\v1\BookLikesController;
 use App\Http\Controllers\api\v1\SavedBookController;
@@ -76,6 +77,10 @@ Route::prefix('/v1')->group(function () {
         Route::post('books/saveBook', [SavedBookController::class, 'save']);
         Route::post('books/deleteSaved', [SavedBookController::class, 'delete']);
         Route::post('books/getSavedBooks', [SavedBookController::class, 'getSavedBook']);
+
+        Route::post('books/saveBab', [SavedBabController::class, 'save']);
+        Route::post('books/deleteSaved', [SavedBabController::class, 'delete']);
+        Route::post('books/getSavedBabs', [SavedBabController::class, 'getSavedBab']);
 
         Route::post('comment/create', [CommentsController::class, 'save']);
         Route::post('comment/getById', [CommentsController::class, 'getById']);

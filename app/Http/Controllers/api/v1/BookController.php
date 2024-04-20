@@ -6,6 +6,7 @@ use App\Models\Book;
 use App\Models\User;
 use App\Models\BookLike;
 use App\Models\Category;
+use App\Models\SavedBab;
 use App\Models\SavedBook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -470,9 +471,21 @@ class BookController extends Controller
             } else {
                 $data->haveSaved = false;
             }
+            foreach ($data->babs as $loop) {
+                $tempSaved = SavedBab::where(['uid' => $request->uid, 'bab_id' => $loop->id])->first();
+
+                if (isset($tempSaved) && $tempSaved->id) {
+                    $loop->is_saved = true;
+                } else {
+                    $loop->is_saved = false;
+                }
+            }
         } else {
             $data->haveLiked = false;
             $data->haveSaved = false;
+            foreach ($data->babs as $loop) {
+                $loop->is_saved = false;
+            }
         }
         $response = [
             'data' => new BookResource($data),
