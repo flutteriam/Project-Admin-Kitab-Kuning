@@ -78,9 +78,9 @@ Route::prefix('/v1')->group(function () {
         Route::post('books/deleteSaved', [SavedBookController::class, 'delete']);
         Route::post('books/getSavedBooks', [SavedBookController::class, 'getSavedBook']);
 
-        Route::post('books/saveBab', [SavedBabController::class, 'save']);
-        Route::post('books/deleteSaved', [SavedBabController::class, 'delete']);
-        Route::post('books/getSavedBabs', [SavedBabController::class, 'getSavedBab']);
+        Route::post('babs/saveBab', [SavedBabController::class, 'save']);
+        Route::post('babs/deleteSaved', [SavedBabController::class, 'delete']);
+        Route::post('babs/getSavedBabs', [SavedBabController::class, 'getSavedBab']);
 
         Route::post('comment/create', [CommentsController::class, 'save']);
         Route::post('comment/getById', [CommentsController::class, 'getById']);
