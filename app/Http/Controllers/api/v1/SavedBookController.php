@@ -175,22 +175,18 @@ class SavedBookController extends Controller
         $data = DB::table('saved_books')
             ->select(
                 'saved_books.id as id',
-                'books.id as book_id',
                 'books.category_id as category_id',
                 'books.comments as comments',
                 'books.content as content',
                 'books.cover as cover',
                 'books.created_at',
                 'books.likes as likes',
-                'books.share_content as share_content',
-                'books.short_description as short_description',
+                'books.description as description',
                 'books.slugs as slugs',
                 'books.status as status',
                 'books.title as title',
                 'books.type as type',
-                'books.videoUrl as videoUrl',
-                'categories.name as cate_name',
-                'categories.title_color as title_color'
+                'categories.name as cate_name'
             )
             ->join('books', 'saved_books.book_id', 'books.id')
             ->join('categories', 'books.category_id', '=', 'categories.id')
