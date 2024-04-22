@@ -175,6 +175,7 @@ class SavedBookController extends Controller
         $data = DB::table('saved_books')
             ->select(
                 'saved_books.id as id',
+                'books.id as book_id',
                 'books.category_id as category_id',
                 'books.comments as comments',
                 'books.content as content',
