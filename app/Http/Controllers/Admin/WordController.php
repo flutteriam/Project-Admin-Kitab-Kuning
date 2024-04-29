@@ -115,7 +115,6 @@ class WordController extends Controller
         $chapter = Word::find($id);
         $chapter->update([
             'arab' => $request->arab,
-            'arab_harokat' => $request->arab_harokat,
             'translate' => $request->translate,
             'basic' => '',
         ]);

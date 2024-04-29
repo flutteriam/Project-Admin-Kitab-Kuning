@@ -202,11 +202,6 @@
                             <input type="text" name="arab" id="fieldArab" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label for="">Arab Harokat</label>
-                            <input type="text" name="arab_harokat" id="fieldArabHarokat" class="form-control"
-                                required>
-                        </div>
-                        <div class="form-group">
                             <label for="">Terjemahan Kata</label>
                             <textarea name="translate" id="fieldTranslate" cols="30" rows="5" class="form-control" required></textarea>
                         </div>
@@ -679,7 +674,6 @@
             $("#fieldBaitWord").val(chapter_id)
 
             $("#fieldArab").val('')
-            $("#fieldArabHarokat").val('')
             $('#fieldTranslate').val('')
 
             $("#btn-del-word").hide()
@@ -758,7 +752,6 @@
                         $("#modal-data-word").modal('show')
 
                         $("#fieldArab").val(word.arab)
-                        $("#fieldArabHarokat").val(word.arab_harokat)
                         $('#fieldTranslate').val(word.translate)
 
                         typeWord = 'PUT'

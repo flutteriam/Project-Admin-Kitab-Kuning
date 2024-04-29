@@ -17,7 +17,6 @@ class WordController extends Controller
             'chapter_id' => 'required',
             'order' => 'required',
             'arab' => 'required',
-            'arab_harokat' => 'required',
             'translate' => 'required',
             'basic' => 'required',
         ]);

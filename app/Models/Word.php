@@ -10,7 +10,6 @@ class Word extends Model
     protected $fillable = [
         'arab',
         'order',
-        'arab_harokat',
         'book_id',
         'bab_id',
         'chapter_id',

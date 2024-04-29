@@ -18,7 +18,6 @@ class WordCreateRequest extends FormRequest
             'bab_id' => 'required',
             'chapter_id' => 'required',
             'arab' => 'required',
-            'arab_harokat' => 'required',
             'translate' => 'required',
         ];
     }

@@ -52,8 +52,6 @@
                                 ondblclick="editDataWord(this)" data-id="{{ $kata->id }}"
                                 data-order="{{ $kata->order }}" data-chapter-id="{{ $kata->chapter_id }}"
                                 data-bab-id="{{ $kata->bab_id }}" data-book-id="{{ $kata->book_id }}">
-                                <h1 class="arab text-dark harokat" style="display: none;">{{ $kata->arab_harokat }}
-                                </h1>
                                 <h1 class="arab text-dark nonharokat">{{ $kata->arab }}</h1>
                                 {!! $kata->translate_word !!}
                             </li>
