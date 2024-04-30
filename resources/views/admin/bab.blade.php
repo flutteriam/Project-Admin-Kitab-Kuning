@@ -75,6 +75,7 @@
                         </div>
                         <div class="col-md-6 text-right">
                             <button class="btn btn-primary" id="tambah-data"><i class="fa fa-plus"></i> Tambah</button>
+                            <button id="downloadPdf" class="btn btn-primary">Unduh PDF</button>
                         </div>
                     </div>
                 </div>
@@ -105,7 +106,8 @@
 
                         <div class="form-group">
                             <label for="">Judul</label>
-                            <input type="text" placeholder="Judul" name="title" id="fieldTitle" class="form-control">
+                            <input type="text" placeholder="Judul" name="title" id="fieldTitle"
+                                class="form-control">
                         </div>
                         <div class="form-group" id="orderForm" style="display:none">
                             <label for="">Urutan</label>
@@ -225,12 +227,31 @@
     <script src="{{ asset('vendor/ckeditor/adapters/jquery.js') }}"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var textContainers = document.querySelectorAll('.text-container');
+            textContainers.forEach(function(container) {
+                var text = container.querySelector('.text');
+                var emptyBox = container.querySelector('.empty-box');
+                var textWidth = text.offsetWidth;
+                emptyBox.style.width = (textWidth + 60) + 'px';
+            });
+        });
+
         let contextMenu = document.getElementById('context-menu');
 
         let table
         let type
         $(document).ready(() => {
             get_bab_by_kitab($("#kitab").val(), 'container-detail')
+
+            $('#downloadPdf').click(function() {
+                var idKitab = $('#kitab').val();
+                if (idKitab) {
+                    var url = '{{ route('download.pdf', ':id') }}';
+                    url = url.replace(':id', idKitab);
+                    window.location.href = url;
+                }
+            });
 
             $("#tambah-data").on('click', () => {
                 let kitab = $("#kitab").val()

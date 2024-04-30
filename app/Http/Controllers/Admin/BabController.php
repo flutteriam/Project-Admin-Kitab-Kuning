@@ -75,7 +75,7 @@ class BabController extends Controller
             $selectedBook = Book::with('category')->find($id);
             $books = Book::where('category_id', $selectedBook->category_id)->get();
         }
-        return view('admin.bab', compact("categories", "selectedBook", "books", "count"));
+        return view('admin.bab', compact("id", "categories", "selectedBook", "books", "count"));
     }
 
     /**

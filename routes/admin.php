@@ -1,14 +1,14 @@
 <?php
 
-use App\Http\Controllers\Admin\WordController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\BabController;
+use App\Http\Controllers\Admin\PdfController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BookController;
+use App\Http\Controllers\Admin\WordController;
 use App\Http\Controllers\Admin\ChapterController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\WordTemplateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,4 +47,6 @@ Route::group(['middleware' => ['isAuth', 'isRole:admin|penginput']], function ()
     Route::post('word/duplicate', [WordController::class, 'duplicate'])->name('word.duplicate');
     Route::patch('word/{id}/{type}', [WordController::class, 'update_number'])->name('word.patch');
     Route::resource('word', WordController::class)->except(['index', 'show']);
+
+    Route::get('pdf/{id}', [PdfController::class, 'download'])->name('download.pdf');
 });
